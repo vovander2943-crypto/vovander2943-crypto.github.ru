@@ -1,432 +1,570 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Хантавирус 2026 | Современная вирусология и профилактика</title>
-    <!-- Google Fonts Premium + Font Awesome 6 -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- AOS Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 10% 20%, #0a142f, #030714);
-            color: #f0f3ff;
-            line-height: 1.5;
-            scroll-behavior: smooth;
-            overflow-x: hidden;
-        }
-
-        /* анимированный фон — мягкие частицы (атмосферно, не агрессивно) */
-        .ambient-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 200, 255, 0.12) 0%, rgba(100, 80, 255, 0) 80%);
-            filter: blur(40px);
-            animation: floatOrb 22s infinite alternate ease-in-out;
-        }
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-            100% { transform: translate(40px, -30px) scale(1.3); opacity: 0.6; }
-        }
-
-        /* улучшенный glassmorphism — мягкий, с приятной полупрозрачностью */
-        .glass-card, nav, .tab-content, .faq-item, .stat-card, .check-item, .map-legend, .symptom-card {
-            background: rgba(20, 30, 55, 0.45);
-            backdrop-filter: blur(14px);
-            border-radius: 2rem;
-            border: 1px solid rgba(120, 180, 255, 0.25);
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
-            transition: all 0.25s ease;
-        }
-
-        .glass-card:hover, .stat-card:hover {
-            border-color: rgba(0, 210, 210, 0.5);
-            background: rgba(30, 45, 75, 0.55);
-            transform: translateY(-3px);
-        }
-
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 2rem 2rem;
-            position: relative;
-            z-index: 3;
-        }
-
-        /* навигация — утонченная */
-        .nav-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.7rem;
-            margin-bottom: 3rem;
-            background: rgba(10, 18, 35, 0.55);
-            backdrop-filter: blur(20px);
-            border-radius: 4rem;
-            padding: 0.7rem 1.5rem;
-            border: 1px solid rgba(0, 255, 210, 0.2);
-        }
-        .tab-btn {
-            background: transparent;
-            border: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.7rem 1.5rem;
-            border-radius: 3rem;
-            color: #ccdcff;
-            cursor: pointer;
-            transition: all 0.25s;
-            font-family: inherit;
-            letter-spacing: -0.2px;
-            backdrop-filter: blur(4px);
-        }
-        .tab-btn i {
-            margin-right: 8px;
-            font-size: 0.95rem;
-        }
-        .tab-btn.active, .tab-btn:hover {
-            background: linear-gradient(115deg, #00d2ff, #7bffb0);
-            color: #07122a;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
-            border: none;
-        }
-
-        .tab-pane {
-            display: none;
-            animation: fadeSlideUp 0.55s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
-        .tab-pane.active-pane {
-            display: block;
-        }
-        @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(18px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        h1, h2, h3 {
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-        h1 {
-            font-size: 2.8rem;
-            background: linear-gradient(125deg, #FFFFFF, #9efff0, #6cc3ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 1rem;
-        }
-        h2 {
-            font-size: 2rem;
-            margin-bottom: 1.4rem;
-            border-left: 5px solid #2effe0;
-            padding-left: 1.2rem;
-            background: linear-gradient(135deg, #f0f9ff, #b9f6ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        h3 {
-            font-size: 1.4rem;
-            margin: 1rem 0 0.8rem;
-            color: #d2f0ff;
-        }
-
-        .grid-2, .stats-grid, .symptom-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .stat-card, .symptom-card {
-            padding: 1.8rem;
-            border-radius: 1.8rem;
-        }
-
-        .progress-bar {
-            background: #1f2b46;
-            border-radius: 40px;
-            height: 8px;
-            overflow: hidden;
-            margin: 1rem 0;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #a0f0ff, #5ac8fa);
-            border-radius: 40px;
-            width: 0%;
-        }
-
-        .map-placeholder {
-            background: rgba(0, 20, 40, 0.6);
-            border-radius: 2rem;
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .check-list {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 1.8rem;
-            padding: 1.4rem;
-            margin: 1.2rem 0;
-        }
-        .check-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 0.9rem 1.2rem;
-            margin: 0.8rem 0;
-            border-radius: 2rem;
-            transition: 0.2s;
-        }
-
-        .faq-item {
-            margin-bottom: 1rem;
-            border-radius: 1.6rem;
-            overflow: hidden;
-            transition: 0.2s;
-        }
-        .faq-question {
-            padding: 1.2rem 1.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,240,0.02);
-            font-size: 1.05rem;
-        }
-        .faq-answer {
-            padding: 0 1.8rem 1.4rem 1.8rem;
-            border-top: 1px solid rgba(100, 200, 255, 0.2);
-            display: none;
-            color: #E2EEFF;
-        }
-        .faq-item.open .faq-answer {
-            display: block;
-        }
-
-        footer {
-            margin-top: 3.5rem;
-            text-align: center;
-            padding: 2rem;
-            border-radius: 2rem;
-            background: rgba(8, 16, 32, 0.5);
-            backdrop-filter: blur(4px);
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 780px) {
-            .container { padding: 1.2rem; }
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.6rem; }
-            .tab-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
-        }
-
-        .region-icon i {
-            font-size: 2rem;
-            margin: 0 5px;
-            filter: drop-shadow(0 0 4px cyan);
-        }
-        .mt-2 { margin-top: 1rem; }
-        .mt-3 { margin-top: 1.8rem; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Общий холст 50x50 • Рисуем вместе</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(145deg, #1a1e2b 0%, #2a3142 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border-radius: 2.5rem;
+      padding: 2.2rem;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    h1 {
+      color: #f0e9e1;
+      font-weight: 500;
+      font-size: 1.9rem;
+      letter-spacing: 2px;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      margin-bottom: -0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    h1 span {
+      background: #f7b731;
+      color: #1e1e2f;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 0.2rem 1rem;
+      border-radius: 30px;
+      letter-spacing: 0.5px;
+    }
+    .canvas-wrapper {
+      background: #0b0d14;
+      border-radius: 28px;
+      padding: 12px;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 18px 30px rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    canvas {
+      display: block;
+      width: 500px;
+      height: 500px;
+      image-rendering: crisp-edges;
+      image-rendering: pixelated;
+      border-radius: 16px;
+      box-shadow: 0 0 0 2px rgba(255, 200, 100, 0.3);
+      background: #1c1c24;
+      cursor: crosshair;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2rem;
+      background: rgba(20, 22, 31, 0.7);
+      backdrop-filter: blur(15px);
+      padding: 1rem 2rem;
+      border-radius: 60px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .color-picker {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      background: rgba(0,0,0,0.3);
+      padding: 0.3rem 1.2rem;
+      border-radius: 40px;
+    }
+    .color-picker label {
+      color: #ccc;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    input[type="color"] {
+      width: 42px;
+      height: 42px;
+      border: 2px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      background: transparent;
+      padding: 2px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 0.6rem;
+    }
+    button {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #e0e0e0;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(45, 50, 70, 0.5);
+    }
+    button:hover {
+      background: #f7b731;
+      color: #12121c;
+      border-color: #f7b731;
+      box-shadow: 0 8px 20px rgba(247, 183, 49, 0.4);
+      transform: translateY(-2px);
+    }
+    button:active {
+      transform: translateY(1px);
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #b9c6da;
+      font-size: 0.9rem;
+      margin-left: 0.5rem;
+    }
+    .indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff5e57;
+      box-shadow: 0 0 12px #ff5e57;
+    }
+    .indicator.connected {
+      background: #2ed573;
+      box-shadow: 0 0 15px #2ed573;
+    }
+    .user-hint {
+      color: #9aa4bf;
+      font-size: 0.8rem;
+      text-align: center;
+      margin-top: -0.3rem;
+    }
+  </style>
 </head>
 <body>
-<div class="ambient-bg" id="bgOrbs"></div>
 <div class="container">
-    <!-- элегантная навигация -->
-    <div class="nav-tabs">
-        <button class="tab-btn active" data-tab="overview"><i class="fas fa-virus"></i> Главная</button>
-        <button class="tab-btn" data-tab="symptoms"><i class="fas fa-head-side-medical"></i> Симптомы</button>
-        <button class="tab-btn" data-tab="transmission"><i class="fas fa-rat"></i> Передача</button>
-        <button class="tab-btn" data-tab="diagnosis"><i class="fas fa-microscope"></i> Диагностика</button>
-        <button class="tab-btn" data-tab="treatment"><i class="fas fa-syringe"></i> Лечение</button>
-        <button class="tab-btn" data-tab="global"><i class="fas fa-globe-americas"></i> Глобальная 2026</button>
-        <button class="tab-btn" data-tab="research"><i class="fas fa-flask"></i> Исследования</button>
-        <button class="tab-btn" data-tab="faq"><i class="fas fa-question-circle"></i> FAQ</button>
-    </div>
+  <h1>
+    🎨 ПИКСЕЛЬНЫЙ МИР
+    <span>50x50</span>
+  </h1>
 
-    <!-- РАЗДЕЛ 1: ОБЗОР -->
-    <div id="overview" class="tab-pane active-pane" data-aos="fade-up">
-        <h1><i class="fas fa-biohazard"></i> Хантавирус 2026: эволюция угрозы</h1>
-        <div class="glass-card" style="padding: 2rem; margin: 1.5rem 0;">
-            <p style="font-size: 1.1rem;"><strong>Что такое хантавирус?</strong> Семейство РНК-содержащих вирусов, переносимых грызунами. Вызывает ГЛПС (геморрагическая лихорадка с почечным синдромом) и ХЛС (хантавирусный легочный синдром). Впервые выделен в 1976 году в Корее. Сегодня, в 2026 году, изменение климата и урбанизация расширяют ареалы переносчиков, делая инфекцию глобальной проблемой.</p>
-            <p class="mt-2"><i class="fas fa-chart-line" style="color:#6efff0;"></i> <strong>Ключевые факты 2026:</strong> летальность при ХЛС достигает 38–45%, при ГЛПС – 8–15%. Ежегодно до 200 000 случаев, реальные цифры выше. За 2025–2026 отмечены новые вспышки в Чили, Германии и Приволжье.</p>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card" data-aos="fade-right"><i class="fas fa-disease fa-2x" style="color:#8affc0;"></i><h3>Новые случаи 2025–2026</h3><p>???? Россия: 347 (ГЛПС) <br>???? Китай: 2100+ <br>???? Европа: 1250 (Puumala) <br>???? Америка: 287 (Sin Nombre, Andes)</p></div>
-            <div class="stat-card" data-aos="fade-left"><i class="fas fa-newspaper"></i><h3>Последние новости</h3><p>??? Янв 2026: Чили — кластер Andes с редкой передачей человек-человек.<br>?? Дек 2025: Испытания мРНК-вакцины расширены до фазы III.<br>?? 2026: ИИ-модель предсказывает вспышки в Европе с точностью 92%.</p></div>
-        </div>
-        <div class="glass-card" style="padding: 1.5rem;"><i class="fas fa-shield-virus"></i> Почему важно сегодня? Глобальное потепление + лесные пожары вытесняют грызунов в жилые зоны — риск экспоненциально растет.</div>
-    </div>
+  <div class="canvas-wrapper">
+    <canvas id="sharedCanvas" width="50" height="50"></canvas>
+  </div>
 
-    <!-- СИМПТОМЫ И СТАДИИ -->
-    <div id="symptoms" class="tab-pane" data-aos="fade-up">
-        <h2><i class="fas fa-chart-simple"></i> Клиническая картина: стадии и штаммы 2026</h2>
-        <div class="grid-2">
-            <div class="glass-card"><h3>?? Продромальный период</h3><p>Лихорадка, сильная головная боль, миалгия, тошнота, гиперемия. Длится 2–6 дней. Очень напоминает грипп.</p><div class="progress-bar"><div class="progress-fill" style="width:28%"></div></div></div>
-            <div class="glass-card"><h3>?? Легочная стадия (ХЛС)</h3><p>Одышка, тахипноэ, падение сатурации, отек легких. Быстрое ухудшение. Штаммы Sin Nombre, Andes.</p><div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div></div>
-            <div class="glass-card"><h3>?? Почечная стадия (ГЛПС)</h3><p>Олигурия, острая почечная недостаточность, тромбоцитопения. Характерно для Hantaan, Puumala.</p><div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div></div>
-        </div>
-        <h3>Сравнение доминирующих штаммов</h3>
-        <div class="symptom-grid">
-            <div class="stat-card"><i class="fas fa-dna"></i> <strong>Sin Nombre</strong> – США/Канада: лёгочная форма, летальность ~38%.</div>
-            <div class="stat-card"><i class="fas fa-dna"></i> <strong>Hantaan</strong> – Азия: тяжелая ГЛПС, геморрагии, шок.</div>
-            <div class="stat-card"><i class="fas fa-dna"></i> <strong>Puumala</strong> – Европа: более мягкая нефропатия, но госпитализация в 20%.</div>
-            <div class="stat-card"><i class="fas fa-dna"></i> <strong>Andes</strong> – Юж. Америка: ХЛС + редкая передача от человека.</div>
-        </div>
-        <div class="glass-card" style="padding:1.2rem"><i class="fas fa-hourglass-half"></i> Шкала прогрессирования: 1-6 день(продром) > 4-10 день (критический) > при отсутствии терапии летальность высока.</div>
+  <div class="toolbar">
+    <div class="color-picker">
+      <label for="colorPicker">🎨</label>
+      <input type="color" id="colorPicker" value="#f7b731">
     </div>
-
-    <!-- ПЕРЕДАЧА -->
-    <div id="transmission" class="tab-pane">
-        <h2><i class="fas fa-paw"></i> Резервуары и пути заражения</h2>
-        <div class="glass-card" style="padding:1.5rem"><p><strong>Грызуны-переносчики:</strong> оленьи мыши (Sin Nombre), рыжая полёвка (Puumala), азиатская мышь (Hantaan), хлопковая крыса (Andes).</p>
-        <div class="region-icon"><i class="fas fa-mouse"></i> Россия: рыжая полёвка <i class="fas fa-mouse"></i> Китай: полевки <i class="fas fa-mouse"></i> Европа: Puumala <i class="fas fa-mouse"></i> США: Peromyscus</div></div>
-        <div class="grid-2 mt-2">
-            <div class="stat-card"><i class="fas fa-wind"></i> <strong>Воздушно-пылевой (основной)</strong> – вдыхание аэрозолей из свежих экскрементов, мочи.</div>
-            <div class="stat-card"><i class="fas fa-hand-holding-heart"></i> <strong>Контактный/алиментарный</strong> – через поврежденную кожу, зараженную еду/воду.</div>
-            <div class="stat-card"><i class="fas fa-hand-holding-medical"></i> <strong>Укусы</strong> – единичные случаи.</div>
-            <div class="stat-card"><i class="fas fa-user-friends"></i> <strong>Мифы и правда</strong> – передача от человека к человеку описана только для штамма Andes (Чили, Аргентина). Для Sin Nombre и Hantaan межчеловеческой передачи нет.</div>
-        </div>
+    <div class="btn-group">
+      <button id="clearBtn" title="Очистить холст (для всех)">🗑️ Очистить</button>
     </div>
-
-    <!-- ДИАГНОСТИКА -->
-    <div id="diagnosis" class="tab-pane">
-        <h2><i class="fas fa-vial"></i> Современная диагностика 2026</h2>
-        <div class="glass-card" style="padding:1.5rem">?? Молекулярные методы: <strong>ПЦР</strong> (высокая чувствительность в 1-ю неделю), <strong>ИФА</strong> IgM/IgG. Быстрые тесты-полоски для полевых условий. Дифференциация от гриппа, COVID-19, лептоспироза – ключевые маркеры: тромбоцитопения, лейкоцитоз, гематокрит, олигурия + эпиданамнез.</div>
-        <div class="check-list"><h3><i class="fas fa-list-check"></i> Чек-лист: «Срочно к врачу!»</h3>
-            <div class="check-item"><i class="fas fa-check-circle" style="color:#5effbc;"></i> Лихорадка + сильная головная боль + тошнота после уборки в подвале или кемпинга</div>
-            <div class="check-item"><i class="fas fa-check-circle" style="color:#5effbc;"></i> Одышка, учащенное дыхание через 2–6 дней от начала лихорадки</div>
-            <div class="check-item"><i class="fas fa-check-circle" style="color:#5effbc;"></i> Резкое снижение мочи, боли в пояснице, кровоизлияния (петехии)</div>
-        </div>
+    <div class="status">
+      <span id="connectionIndicator" class="indicator"></span>
+      <span id="statusText">подключение...</span>
     </div>
-
-    <!-- ЛЕЧЕНИЕ И ПРОФИЛАКТИКА -->
-    <div id="treatment" class="tab-pane">
-        <h2><i class="fas fa-capsules"></i> Протоколы лечения и профилактика 2026</h2>
-        <div class="grid-2">
-            <div class="glass-card"><i class="fas fa-lungs"></i> <strong>Терапия:</strong> ранняя госпитализация, интенсивный мониторинг, оксигенотерапия, вазопрессоры. При ХЛС – ЭКМО <span style="color:#9effaa;">(спасает жизнь)</span>. Рибавирин показан при ГЛПС в первые 7 дней. Экспериментально – фавипиравир и моноклональные антитела.</div>
-            <div class="glass-card"><i class="fas fa-shield-vaccine"></i> <strong>Вакцинация на 2026:</strong> лицензированной вакцины нет в большинстве стран. Hantavax (Корея) – низкая иммуногенность. мРНК-вакцина Moderna (фаза II/III) в РФ и США, ожидаемая регистрация 2028–2029.</div>
-        </div>
-        <h3>??? Как защитить себя?</h3>
-        <div class="symptom-grid">
-            <div class="stat-card"><i class="fas fa-home"></i> Дом: заделать щели, мышеловки, влажная уборка с хлором, респиратор N95.</div>
-            <div class="stat-card"><i class="fas fa-campground"></i> Кемпинг: не спать на голой земле, избегать грызунов, хранить еду герметично.</div>
-            <div class="stat-card"><i class="fas fa-tractor"></i> Сельская местность: дератизация, перчатки при уборке сена/дров.</div>
-        </div>
-    </div>
-
-    <!-- ГЛОБАЛЬНАЯ СИТУАЦИЯ 2026 -->
-    <div id="global" class="tab-pane">
-        <h2><i class="fas fa-globe"></i> Карта вспышек и прогноз 2026</h2>
-        <div class="map-placeholder glass-card"><i class="fas fa-map-marked-alt fa-2x"></i> <strong>Актуальная эпидситуация:</strong><br>?? Европа: Германия +112 случаев, Австрия +34 (Puumala).<br>?? Россия: Рост ГЛПС на 18% (Башкортостан, Удмуртия).<br>?? Китай: провинции Хубэй, Шэньси – активная циркуляция Hantaan.<br>?? Америка: Нью-Мексико и Чили – высокий риск.<br><span style="display:block; margin-top:12px;"><i class="fas fa-chart-line"></i> Прогноз ученых ECDC: к концу 2026 года число случаев в Европе вырастет на 27% из-за мягкой зимы.</span></div>
-        <div class="stats-grid"><div class="stat-card"><i class="fas fa-chart-simple"></i> Годовая динамика (мир): 2023: 142k, 2024: 163k, 2025: 183k, 2026 Q1-Q2: 84k прогноз.</div><div class="stat-card"><i class="fas fa-temperature-high"></i> Климатический фактор: расширение ареала полевок на 15% за 2 года.</div></div>
-    </div>
-
-    <!-- ИССЛЕДОВАНИЯ И РАЗРАБОТКИ -->
-    <div id="research" class="tab-pane">
-        <h2><i class="fas fa-microchip"></i> Передний край науки 2026</h2>
-        <div class="glass-card" style="padding:1.8rem"><i class="fas fa-brain"></i> <strong>Искусственный интеллект в эпидемиологии:</strong> нейросеть «HantaNet» анализирует геномы вируса и прогнозирует мутации. <br><br>?? <strong>Экспериментальные препараты:</strong> ингибиторы проникновения (LS-Hant-01) в II фазе; терапия реконвалесцентными антителами. <br><br>?? <strong>Вакцинные разработки:</strong> китайская векторная вакцина (аденовирус), российская инактивированная (НИИ им. Чумакова) – доклиника успешна.</div>
-        <div class="glass-card mt-3"><i class="fas fa-user-md"></i> <strong>Интервью с д.м.н. Еленой Вершинской (вирусолог, Роспотребнадзор):</strong> «Хантавирус остаётся «тихим убийцей», но технологии CRISPR и ИИ дают надежду на прорыв в лечении к 2028 году. Главное — ранняя диагностика.»</div>
-    </div>
-
-    <!-- FAQ (15 вопросов - максимум информации) -->
-    <div id="faq" class="tab-pane">
-        <h2><i class="fas fa-question"></i> Часто задаваемые вопросы (2026)</h2>
-        <div class="faq-list">
-            <div class="faq-item"><div class="faq-question">? Смертелен ли хантавирус? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Да, в зависимости от штамма: ХЛС (Sin Nombre, Andes) до 45%, ГЛПС (Hantaan) до 15%. При своевременной реанимации шансы возрастают.</div></div>
-            <div class="faq-item"><div class="faq-question">? Передается ли через еду? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Да, если продукты загрязнены мочой/калом грызунов. Тщательно мойте овощи и храните в герметичной таре.</div></div>
-            <div class="faq-item"><div class="faq-question">? Можно ли вылечиться дома? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Абсолютно нет! Только в условиях интенсивной терапии. Домашнее лечение ведет к летальному исходу из-за отека легких/почек.</div></div>
-            <div class="faq-item"><div class="faq-question">? Есть ли природный иммунитет после болезни? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Пожизненный иммунитет к конкретному серотипу, но возможна инфекция другим штаммом.</div></div>
-            <div class="faq-item"><div class="faq-question">? Передается ли через укус комара? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Нет. Хантавирус не переносится членистоногими, только грызуны и их выделения.</div></div>
-            <div class="faq-item"><div class="faq-question">? Инкубационный период? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">От 1 до 5 недель, чаще 14–21 день.</div></div>
-            <div class="faq-item"><div class="faq-question">? Где в России наибольший риск? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Башкортостан, Татарстан, Самарская область, Приморье, Свердловская область – эндемики по ГЛПС.</div></div>
-            <div class="faq-item"><div class="faq-question">? Может ли хантавирус поражать и легкие, и почки одновременно? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Редко, но смешанные формы возможны при некоторых штаммах (Dobrava). Однако классическое разделение сохраняется.</div></div>
-            <div class="faq-item"><div class="faq-question">? Есть ли противовирусное этиотропное лечение? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Рибавирин эффективен только при раннем применении и для ГЛПС. Основная помощь — интенсивная поддерживающая терапия.</div></div>
-            <div class="faq-item"><div class="faq-question">? Можно ли заразиться от домашней мыши? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Да, домовые мыши могут быть переносчиками. Необходима дератизация и гигиена.</div></div>
-            <div class="faq-item"><div class="faq-question">? Почему вирус не так известен как COVID? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Отсутствие пандемического потенциала (редкая передача человек-человек), но локальные вспышки и высокая летальность делают его опасным.</div></div>
-            <div class="faq-item"><div class="faq-question">? Когда ожидается вакцина в РФ? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Клинические испытания инактивированной вакцины (ФБУН «Вектор») запланированы на 2027, возможная регистрация 2029–2030.</div></div>
-            <div class="faq-item"><div class="faq-question">? Правда, что штамм Andes может передаваться от человека человеку? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Да, задокументированы случаи в Южной Америке, но это редкость и требует тесного контакта.</div></div>
-            <div class="faq-item"><div class="faq-question">? Влияет ли изменение климата на распространение? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Критически: тёплые зимы увеличивают популяцию грызунов и риск контактов с человеком.</div></div>
-            <div class="faq-item"><div class="faq-question">? Существуют ли экспресс-тесты для путешественников? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Да, в 2026 году доступны иммунохроматографические тест-полоски (чувствительность ~87%), но золотой стандарт — ПЦР.</div></div>
-        </div>
-    </div>
-
-    <footer>
-        <hr style="background: rgba(0,200,255,0.3); margin-bottom: 1rem;">
-        <p><i class="fas fa-database"></i> Информационный портал «Хантавирус 2026» — данные на основе CDC, ECDC и Роспотребнадзора.</p>
-        <p><i class="fas fa-envelope"></i> По вопросам сотрудничества, рекламы и партнерства: <strong style="color:#b5f0ff;">vovander2943@gmail.com</strong></p>
-        <p style="font-size: 0.75rem; margin-top: 0.8rem;">?? Материалы носят ознакомительный характер. При появлении симптомов незамедлительно обращайтесь к врачу.</p>
-    </footer>
+  </div>
+  <div class="user-hint">
+    ✦ Кликните или рисуйте, удерживая кнопку мыши ✦ Изменения видят все игроки онлайн ✦
+  </div>
 </div>
 
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    AOS.init({ duration: 800, once: true, offset: 20 });
-    // tabs switching
-    const tabs = document.querySelectorAll('.tab-btn');
-    const panes = document.querySelectorAll('.tab-pane');
-    function activateTab(tabId) {
-        panes.forEach(p => p.classList.remove('active-pane'));
-        document.getElementById(tabId).classList.add('active-pane');
-        tabs.forEach(btn => btn.classList.remove('active'));
-        document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+  (function() {
+    // ---------- НАСТРОЙКИ ----------
+    const CANVAS_SIZE = 50;
+    const PIXEL_SCALE = 10; // для отображения (50*10 = 500px)
+
+    // Публичный WebSocket-сервер (бесплатный, общий для демонстрации)
+    // Используем бесплатный сервис echoes (можно заменить на свой)
+    const WS_SERVER = 'wss://broadcast-channel.glitch.me/'; 
+    // ⚠️ ВАЖНО: Это демонстрационный публичный сервер. 
+    // В реальном проекте замените на свой WebSocket-сервер.
+    // Сервер должен ретранслировать сообщения всем клиентам (broadcast).
+
+    // ---------- ЭЛЕМЕНТЫ ----------
+    const canvas = document.getElementById('sharedCanvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const colorPicker = document.getElementById('colorPicker');
+    const clearBtn = document.getElementById('clearBtn');
+    const connectionIndicator = document.getElementById('connectionIndicator');
+    const statusText = document.getElementById('statusText');
+
+    // ---------- СОСТОЯНИЕ ----------
+    let ws = null;
+    let connected = false;
+    let reconnectTimer = null;
+    let currentColor = colorPicker.value;
+
+    // Хранилище пикселей (50x50) — каждый пиксель RGBA строка или объект.
+    // Будем хранить как одномерный массив строк цветов (hex) для простоты.
+    let pixelData = new Array(CANVAS_SIZE * CANVAS_SIZE).fill('#1c1c24'); // фон по умолчанию
+
+    // Флаг для предотвращения бесконечных циклов при получении своих же сообщений
+    let localUpdate = false;
+
+    // ---------- ИНИЦИАЛИЗАЦИЯ ХОЛСТА ----------
+    function initCanvasBackground() {
+      // Заполняем холст фоном
+      ctx.fillStyle = '#1c1c24';
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      // Загружаем pixelData в холст
+      for (let y = 0; y < CANVAS_SIZE; y++) {
+        for (let x = 0; x < CANVAS_SIZE; x++) {
+          const index = y * CANVAS_SIZE + x;
+          const color = pixelData[index];
+          if (color && color !== '#1c1c24') {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, 1, 1);
+          }
+        }
+      }
     }
-    tabs.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabId = btn.getAttribute('data-tab');
-            activateTab(tabId);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    });
-    // FAQ accordion with smoothness
-    const faqItems = document.querySelectorAll('.faq-item');
-    faqItems.forEach(item => {
-        const quest = item.querySelector('.faq-question');
-        quest.addEventListener('click', () => {
-            const wasOpen = item.classList.contains('open');
-            faqItems.forEach(i => i.classList.remove('open'));
-            if (!wasOpen) item.classList.add('open');
-        });
-    });
-    if(faqItems.length) faqItems[0].classList.add('open');
-    
-    // мягкие фоновые орбы (красивая атмосфера)
-    const bgContainer = document.getElementById('bgOrbs');
-    for(let i=0;i<18;i++){
-        let orb = document.createElement('div');
-        orb.classList.add('orb');
-        let size = Math.random() * 280 + 90;
-        orb.style.width = size+'px';
-        orb.style.height = size+'px';
-        orb.style.left = Math.random()*100+'%';
-        orb.style.top = Math.random()*100+'%';
-        orb.style.animationDuration = 18+Math.random()*25+'s';
-        orb.style.animationDelay = Math.random()*10+'s';
-        orb.style.background = `radial-gradient(circle, rgba(${80+Math.random()*80}, ${150+Math.random()*105}, 255, 0.12) 0%, rgba(20,30,80,0) 80%)`;
-        bgContainer.appendChild(orb);
+
+    // Обновить холст из массива pixelData
+    function renderFullCanvas() {
+      for (let y = 0; y < CANVAS_SIZE; y++) {
+        for (let x = 0; x < CANVAS_SIZE; x++) {
+          const index = y * CANVAS_SIZE + x;
+          ctx.fillStyle = pixelData[index] || '#1c1c24';
+          ctx.fillRect(x, y, 1, 1);
+        }
+      }
     }
+
+    // Установить пиксель (и отправить, если не из сети)
+    function setPixel(x, y, color, broadcast = true) {
+      if (x < 0 || x >= CANVAS_SIZE || y < 0 || y >= CANVAS_SIZE) return;
+      const index = y * CANVAS_SIZE + x;
+      if (pixelData[index] === color) return; // без изменений
+
+      pixelData[index] = color;
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, 1, 1);
+
+      if (broadcast && ws && connected) {
+        sendPixelUpdate(x, y, color);
+      }
+    }
+
+    // Отправка обновления пикселя
+    function sendPixelUpdate(x, y, color) {
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      const message = JSON.stringify({
+        type: 'pixel',
+        x: x,
+        y: y,
+        color: color
+      });
+      try {
+        ws.send(message);
+      } catch (e) {
+        console.warn('Ошибка отправки:', e);
+      }
+    }
+
+    // Отправка очистки холста
+    function sendClearCanvas() {
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      const message = JSON.stringify({
+        type: 'clear',
+        color: '#1c1c24' // цвет фона
+      });
+      try {
+        ws.send(message);
+      } catch (e) {
+        console.warn('Ошибка отправки clear:', e);
+      }
+    }
+
+    // Очистить локально и отправить всем
+    function clearCanvasAction() {
+      // Заполняем массив фоновым цветом
+      pixelData.fill('#1c1c24');
+      renderFullCanvas();
+      sendClearCanvas();
+    }
+
+    // ---------- ОБРАБОТЧИКИ СООБЩЕНИЙ WEB-SOCKET ----------
+    function handleMessage(event) {
+      try {
+        const data = JSON.parse(event.data);
+        if (!data || !data.type) return;
+
+        // Игнорируем сообщения, которые сами же и отправили (если сервер не echo с фильтрацией)
+        // Но публичный сервер может возвращать нам же. Используем флаг localUpdate для защиты,
+        // но проще проверять: если сообщение пришло и мы его применяем, перерисовываем.
+        // Чтобы избежать двойной перерисовки при локальном изменении, будем временно блокировать.
+        if (localUpdate) return;
+
+        switch (data.type) {
+          case 'pixel':
+            if (typeof data.x === 'number' && typeof data.y === 'number' && data.color) {
+              // Устанавливаем пиксель БЕЗ повторной отправки (broadcast = false)
+              setPixel(data.x, data.y, data.color, false);
+            }
+            break;
+          case 'clear':
+            // Очистка от другого игрока
+            pixelData.fill(data.color || '#1c1c24');
+            renderFullCanvas();
+            break;
+          case 'canvasState':
+            // Если сервер присылает полное состояние холста (массив цветов)
+            if (Array.isArray(data.pixels) && data.pixels.length === CANVAS_SIZE * CANVAS_SIZE) {
+              pixelData = [...data.pixels];
+              renderFullCanvas();
+            }
+            break;
+          default:
+            break;
+        }
+      } catch (e) {
+        console.warn('Ошибка обработки сообщения:', e);
+      }
+    }
+
+    // ---------- ПОДКЛЮЧЕНИЕ К СЕРВЕРУ ----------
+    function connectWebSocket() {
+      if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+        return;
+      }
+
+      // Закрываем предыдущее соединение, если есть
+      if (ws) {
+        ws.onclose = null;
+        ws.onerror = null;
+        ws.onmessage = null;
+        if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+          ws.close();
+        }
+      }
+
+      statusText.textContent = 'подключение...';
+      connectionIndicator.classList.remove('connected');
+
+      try {
+        ws = new WebSocket(WS_SERVER);
+      } catch (e) {
+        console.error('Ошибка создания WebSocket:', e);
+        scheduleReconnect();
+        return;
+      }
+
+      ws.onopen = () => {
+        connected = true;
+        statusText.textContent = 'онлайн (совместное рисование)';
+        connectionIndicator.classList.add('connected');
+        console.log('WebSocket подключён');
+
+        // Запрашиваем текущее состояние холста (если сервер поддерживает)
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'requestCanvas' }));
+        }
+        // Сбрасываем таймер реконнекта
+        if (reconnectTimer) {
+          clearTimeout(reconnectTimer);
+          reconnectTimer = null;
+        }
+      };
+
+      ws.onmessage = (event) => {
+        // Чтобы избежать конфликта локальных изменений,
+        // устанавливаем флаг, если сообщение пришло не от нас.
+        // Публичный сервер часто шлёт нам наши же сообщения.
+        // Простейшая защита: если сообщение содержит пиксель, который мы только что установили,
+        // можно игнорировать. Но мы сделаем через временную блокировку при локальной отрисовке.
+        // Более надёжно: сравнивать с последними отправленными данными. 
+        // Для простоты используем флаг localUpdate.
+        handleMessage(event);
+      };
+
+      ws.onerror = (error) => {
+        console.error('Ошибка WebSocket:', error);
+        connected = false;
+        statusText.textContent = 'ошибка соединения';
+        connectionIndicator.classList.remove('connected');
+      };
+
+      ws.onclose = (event) => {
+        connected = false;
+        statusText.textContent = 'соединение прервано';
+        connectionIndicator.classList.remove('connected');
+        console.log('WebSocket закрыт');
+        ws = null;
+        scheduleReconnect();
+      };
+    }
+
+    function scheduleReconnect() {
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      reconnectTimer = setTimeout(() => {
+        console.log('Попытка переподключения...');
+        connectWebSocket();
+      }, 3000);
+    }
+
+    // ---------- ОБРАБОТЧИКИ ХОЛСТА (РИСОВАНИЕ) ----------
+    function getCanvasCoordsFromEvent(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = CANVAS_SIZE / rect.width;   // отношение реального размера к CSS
+      const scaleY = CANVAS_SIZE / rect.height;
+
+      let clientX, clientY;
+
+      if (e.touches) {
+        // Сенсорное устройство
+        if (e.touches.length === 0) return null;
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+        e.preventDefault();
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+
+      // Координаты относительно canvas с учётом масштаба
+      const canvasX = (clientX - rect.left) * scaleX;
+      const canvasY = (clientY - rect.top) * scaleY;
+
+      const x = Math.floor(canvasX);
+      const y = Math.floor(canvasY);
+
+      if (x >= 0 && x < CANVAS_SIZE && y >= 0 && y < CANVAS_SIZE) {
+        return { x, y };
+      }
+      return null;
+    }
+
+    let isDrawing = false;
+
+    function drawAtPosition(e) {
+      const coords = getCanvasCoordsFromEvent(e);
+      if (!coords) return;
+
+      // Устанавливаем флаг, чтобы входящее сообщение не дублировало отрисовку
+      // (публичный сервер возвращает нам наше сообщение)
+      localUpdate = true;
+      setPixel(coords.x, coords.y, currentColor, true);
+      // Снимаем флаг после микро-задержки, чтобы серверное эхо не сработало
+      setTimeout(() => {
+        localUpdate = false;
+      }, 50);
+    }
+
+    function onMouseDown(e) {
+      e.preventDefault();
+      isDrawing = true;
+      drawAtPosition(e);
+    }
+
+    function onMouseMove(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      drawAtPosition(e);
+    }
+
+    function onMouseUp(e) {
+      if (isDrawing) {
+        isDrawing = false;
+      }
+    }
+
+    function onMouseLeave(e) {
+      // Если мышь покидает холст, прекращаем рисование
+      if (isDrawing) {
+        isDrawing = false;
+      }
+    }
+
+    // Сенсорные события
+    function onTouchStart(e) {
+      e.preventDefault();
+      isDrawing = true;
+      drawAtPosition(e);
+    }
+
+    function onTouchMove(e) {
+      e.preventDefault();
+      if (!isDrawing) return;
+      drawAtPosition(e);
+    }
+
+    function onTouchEnd(e) {
+      e.preventDefault();
+      isDrawing = false;
+    }
+
+    // ---------- ПРИВЯЗКА СОБЫТИЙ ----------
+    function bindEvents() {
+      // Мышь
+      canvas.addEventListener('mousedown', onMouseDown);
+      canvas.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+      canvas.addEventListener('mouseleave', onMouseLeave);
+
+      // Сенсор
+      canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+      canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+      canvas.addEventListener('touchend', onTouchEnd);
+      canvas.addEventListener('touchcancel', onTouchEnd);
+
+      // Кнопка очистки
+      clearBtn.addEventListener('click', () => {
+        clearCanvasAction();
+      });
+
+      // Выбор цвета
+      colorPicker.addEventListener('input', (e) => {
+        currentColor = e.target.value;
+      });
+    }
+
+    // ---------- СТАРТ ----------
+    function initialRender() {
+      // Устанавливаем фон по умолчанию
+      pixelData.fill('#1c1c24');
+      renderFullCanvas();
+    }
+
+    // Запуск всего
+    initialRender();
+    bindEvents();
+    connectWebSocket();
+
+    // Очистка при уходе со страницы (не обязательно, но хорошо)
+    window.addEventListener('beforeunload', () => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+    });
+
+  })();
 </script>
 </body>
 </html>
