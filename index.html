@@ -2,568 +2,682 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Общий холст 50x50 • Рисуем вместе</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.5">
+  <title>Игра 2048 | Классическая головоломка</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
-      background: linear-gradient(145deg, #1a1e2b 0%, #2a3142 100%);
-      min-height: 100vh;
+      background: linear-gradient(135deg, #faf8ef 0%, #f5f0e5 100%);
+      font-family: 'Segoe UI', 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      padding: 20px;
+      min-height: 100vh;
       margin: 0;
+      padding: 20px;
+      color: #776e65;
     }
-    .container {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border-radius: 2.5rem;
-      padding: 2.2rem;
-      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+
+    .game-container {
+      background: #ffffffdd;
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 25px 25px 30px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.08);
+      max-width: 500px;
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1.8rem;
-      border: 1px solid rgba(255, 255, 255, 0.15);
     }
-    h1 {
-      color: #f0e9e1;
-      font-weight: 500;
-      font-size: 1.9rem;
-      letter-spacing: 2px;
-      text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-      margin-bottom: -0.5rem;
+
+    .header {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.5rem;
-    }
-    h1 span {
-      background: #f7b731;
-      color: #1e1e2f;
-      font-size: 1rem;
-      font-weight: bold;
-      padding: 0.2rem 1rem;
-      border-radius: 30px;
-      letter-spacing: 0.5px;
-    }
-    .canvas-wrapper {
-      background: #0b0d14;
-      border-radius: 28px;
-      padding: 12px;
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 18px 30px rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    canvas {
-      display: block;
-      width: 500px;
-      height: 500px;
-      image-rendering: crisp-edges;
-      image-rendering: pixelated;
-      border-radius: 16px;
-      box-shadow: 0 0 0 2px rgba(255, 200, 100, 0.3);
-      background: #1c1c24;
-      cursor: crosshair;
-    }
-    .toolbar {
-      display: flex;
+      width: 100%;
+      margin-bottom: 20px;
       flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 1.2rem;
-      background: rgba(20, 22, 31, 0.7);
-      backdrop-filter: blur(15px);
-      padding: 1rem 2rem;
-      border-radius: 60px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      gap: 15px;
     }
-    .color-picker {
+
+    .title-section {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: #776e65;
+      letter-spacing: -1px;
+      line-height: 1;
+      text-shadow: 2px 2px 0 rgba(187, 173, 160, 0.2);
+    }
+
+    .scores {
+      display: flex;
+      gap: 12px;
+    }
+
+    .score-box {
+      background: #bbada0;
+      border-radius: 12px;
+      padding: 10px 20px;
+      text-align: center;
+      color: white;
+      font-weight: 700;
+      box-shadow: 0 6px 0 #9c8a7c;
+      min-width: 80px;
+    }
+
+    .score-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #f0e6d9;
+    }
+
+    .score-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .new-game-btn {
+      background: #8f7a66;
+      border: none;
+      color: white;
+      font-weight: 800;
+      font-size: 1.1rem;
+      padding: 14px 22px;
+      border-radius: 40px;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #6b5e4f;
+      transition: all 0.1s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      background: #8f7a66;
+      border: none;
       display: flex;
       align-items: center;
-      gap: 0.7rem;
-      background: rgba(0,0,0,0.3);
-      padding: 0.3rem 1.2rem;
-      border-radius: 40px;
+      justify-content: center;
+      gap: 6px;
     }
-    .color-picker label {
-      color: #ccc;
+
+    .new-game-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #6b5e4f;
+    }
+
+    .new-game-btn:hover {
+      background: #9c8874;
+    }
+
+    .game-board {
+      position: relative;
+      background: #bbada0;
+      border-radius: 16px;
+      padding: 12px;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 12px;
+      box-shadow: inset 0 0 0 2px rgba(187, 173, 160, 0.3), 0 15px 25px rgba(0,0,0,0.2);
+    }
+
+    .cell {
+      background: #cdc1b4;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 2.2rem;
+      color: #776e65;
+      transition: all 0.15s ease-in-out;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+      aspect-ratio: 1 / 1;
+      user-select: none;
+    }
+
+    /* Цвета плиток */
+    .tile-2 {
+      background: #eee4da;
+      color: #776e65;
+    }
+    .tile-4 {
+      background: #ede0c8;
+      color: #776e65;
+    }
+    .tile-8 {
+      background: #f2b179;
+      color: #f9f6f2;
+    }
+    .tile-16 {
+      background: #f59563;
+      color: white;
+    }
+    .tile-32 {
+      background: #f77c5f;
+      color: white;
+    }
+    .tile-64 {
+      background: #f75f3b;
+      color: white;
+    }
+    .tile-128 {
+      background: #edcf72;
+      color: white;
+      font-size: 2rem;
+      box-shadow: 0 0 15px rgba(243, 215, 116, 0.6);
+    }
+    .tile-256 {
+      background: #edcc61;
+      color: white;
+      font-size: 2rem;
+      box-shadow: 0 0 18px rgba(243, 210, 100, 0.7);
+    }
+    .tile-512 {
+      background: #edc850;
+      color: white;
+      font-size: 2rem;
+      box-shadow: 0 0 22px rgba(243, 200, 70, 0.8);
+    }
+    .tile-1024 {
+      background: #edc53f;
+      color: white;
+      font-size: 1.8rem;
+      box-shadow: 0 0 26px rgba(240, 190, 50, 0.9);
+    }
+    .tile-2048 {
+      background: #edc22e;
+      color: white;
+      font-size: 1.8rem;
+      box-shadow: 0 0 30px rgba(255, 200, 0, 1);
+      animation: pulse 0.8s infinite alternate;
+    }
+    .tile-super {
+      background: #3c3a32;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+
+    .message-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(250, 248, 239, 0.9);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.3s ease;
+      border-radius: inherit;
+    }
+
+    .message-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .message-box {
+      background: white;
+      padding: 35px 45px;
+      border-radius: 30px;
+      text-align: center;
+      box-shadow: 0 30px 45px rgba(0,0,0,0.25);
+      font-weight: 800;
+      font-size: 2.2rem;
+      color: #776e65;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .message-box button {
+      background: #8f7a66;
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #5f5244;
+      transition: 0.1s ease;
+      margin-top: 5px;
+    }
+
+    .message-box button:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #5f5244;
+    }
+
+    .footer-note {
+      margin-top: 15px;
+      color: #b39f8b;
       font-weight: 500;
       font-size: 0.9rem;
     }
-    input[type="color"] {
-      width: 42px;
-      height: 42px;
-      border: 2px solid white;
-      border-radius: 50%;
-      cursor: pointer;
-      background: transparent;
-      padding: 2px;
-    }
-    .btn-group {
-      display: flex;
-      gap: 0.6rem;
-    }
-    button {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      color: #e0e0e0;
-      padding: 0.7rem 1.5rem;
-      border-radius: 2.5rem;
-      font-weight: 600;
-      font-size: 0.95rem;
-      letter-spacing: 0.4px;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      transition: all 0.25s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      background: rgba(45, 50, 70, 0.5);
-    }
-    button:hover {
-      background: #f7b731;
-      color: #12121c;
-      border-color: #f7b731;
-      box-shadow: 0 8px 20px rgba(247, 183, 49, 0.4);
-      transform: translateY(-2px);
-    }
-    button:active {
-      transform: translateY(1px);
-    }
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      color: #b9c6da;
-      font-size: 0.9rem;
-      margin-left: 0.5rem;
-    }
-    .indicator {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #ff5e57;
-      box-shadow: 0 0 12px #ff5e57;
-    }
-    .indicator.connected {
-      background: #2ed573;
-      box-shadow: 0 0 15px #2ed573;
-    }
-    .user-hint {
-      color: #9aa4bf;
-      font-size: 0.8rem;
-      text-align: center;
-      margin-top: -0.3rem;
+
+    @media (max-width: 450px) {
+      .cell {
+        font-size: 1.8rem;
+      }
+      h1 {
+        font-size: 2.8rem;
+      }
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>
-    🎨 ПИКСЕЛЬНЫЙ МИР
-    <span>50x50</span>
-  </h1>
-
-  <div class="canvas-wrapper">
-    <canvas id="sharedCanvas" width="50" height="50"></canvas>
-  </div>
-
-  <div class="toolbar">
-    <div class="color-picker">
-      <label for="colorPicker">🎨</label>
-      <input type="color" id="colorPicker" value="#f7b731">
+<div class="game-container">
+  <div class="header">
+    <div class="title-section">
+      <h1>2048</h1>
     </div>
-    <div class="btn-group">
-      <button id="clearBtn" title="Очистить холст (для всех)">🗑️ Очистить</button>
-    </div>
-    <div class="status">
-      <span id="connectionIndicator" class="indicator"></span>
-      <span id="statusText">подключение...</span>
+    <div class="scores">
+      <div class="score-box">
+        <div class="score-label">Счёт</div>
+        <div class="score-value" id="scoreDisplay">0</div>
+      </div>
+      <div class="score-box">
+        <div class="score-label">Рекорд</div>
+        <div class="score-value" id="bestDisplay">0</div>
+      </div>
     </div>
   </div>
-  <div class="user-hint">
-    ✦ Кликните или рисуйте, удерживая кнопку мыши ✦ Изменения видят все игроки онлайн ✦
+  <button class="new-game-btn" id="newGameButton">
+    <span>↺</span> Новая игра
+  </button>
+
+  <div class="game-board" id="gameBoard"></div>
+  <div class="footer-note">←↑↓→ / свайпы на телефоне</div>
+</div>
+
+<div class="message-overlay" id="messageOverlay">
+  <div class="message-box" id="messageBox">
+    <span id="messageText">Вы победили!</span>
+    <button id="messageCloseBtn">Продолжить</button>
   </div>
 </div>
 
 <script>
   (function() {
-    // ---------- НАСТРОЙКИ ----------
-    const CANVAS_SIZE = 50;
-    const PIXEL_SCALE = 10; // для отображения (50*10 = 500px)
+    // --- Игровое состояние ---
+    const SIZE = 4;
+    let board = [];
+    let score = 0;
+    let bestScore = 0;
+    let gameOverFlag = false;
+    let winAchieved = false; // чтобы показывать победное сообщение один раз
 
-    // Публичный WebSocket-сервер (бесплатный, общий для демонстрации)
-    // Используем бесплатный сервис echoes (можно заменить на свой)
-    const WS_SERVER = 'wss://broadcast-channel.glitch.me/'; 
-    // ⚠️ ВАЖНО: Это демонстрационный публичный сервер. 
-    // В реальном проекте замените на свой WebSocket-сервер.
-    // Сервер должен ретранслировать сообщения всем клиентам (broadcast).
+    // DOM элементы
+    const gameBoardEl = document.getElementById('gameBoard');
+    const scoreDisplayEl = document.getElementById('scoreDisplay');
+    const bestDisplayEl = document.getElementById('bestDisplay');
+    const newGameBtn = document.getElementById('newGameButton');
+    const messageOverlay = document.getElementById('messageOverlay');
+    const messageText = document.getElementById('messageText');
+    const messageCloseBtn = document.getElementById('messageCloseBtn');
 
-    // ---------- ЭЛЕМЕНТЫ ----------
-    const canvas = document.getElementById('sharedCanvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    const colorPicker = document.getElementById('colorPicker');
-    const clearBtn = document.getElementById('clearBtn');
-    const connectionIndicator = document.getElementById('connectionIndicator');
-    const statusText = document.getElementById('statusText');
+    // --- Инициализация / сброс ---
+    function loadBestScore() {
+      try {
+        const saved = localStorage.getItem('2048_best');
+        return saved ? parseInt(saved, 10) : 0;
+      } catch (e) {
+        return 0;
+      }
+    }
 
-    // ---------- СОСТОЯНИЕ ----------
-    let ws = null;
-    let connected = false;
-    let reconnectTimer = null;
-    let currentColor = colorPicker.value;
+    function saveBestScore(value) {
+      try {
+        localStorage.setItem('2048_best', value);
+      } catch (e) {
+        // игнорируем ошибки localStorage
+      }
+    }
 
-    // Хранилище пикселей (50x50) — каждый пиксель RGBA строка или объект.
-    // Будем хранить как одномерный массив строк цветов (hex) для простоты.
-    let pixelData = new Array(CANVAS_SIZE * CANVAS_SIZE).fill('#1c1c24'); // фон по умолчанию
+    function updateBestScore(newScore) {
+      if (newScore > bestScore) {
+        bestScore = newScore;
+        saveBestScore(bestScore);
+        bestDisplayEl.textContent = bestScore;
+      }
+    }
 
-    // Флаг для предотвращения бесконечных циклов при получении своих же сообщений
-    let localUpdate = false;
+    // Создать пустую доску
+    function createEmptyBoard() {
+      return Array(SIZE).fill().map(() => Array(SIZE).fill(0));
+    }
 
-    // ---------- ИНИЦИАЛИЗАЦИЯ ХОЛСТА ----------
-    function initCanvasBackground() {
-      // Заполняем холст фоном
-      ctx.fillStyle = '#1c1c24';
-      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-      // Загружаем pixelData в холст
-      for (let y = 0; y < CANVAS_SIZE; y++) {
-        for (let x = 0; x < CANVAS_SIZE; x++) {
-          const index = y * CANVAS_SIZE + x;
-          const color = pixelData[index];
-          if (color && color !== '#1c1c24') {
-            ctx.fillStyle = color;
-            ctx.fillRect(x, y, 1, 1);
+    // Добавить случайную плитку (2 с вероятностью 90%, 4 — 10%)
+    function addRandomTile(boardState) {
+      const emptyCells = [];
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          if (boardState[r][c] === 0) emptyCells.push({ r, c });
+        }
+      }
+      if (emptyCells.length === 0) return false;
+
+      const { r, c } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+      boardState[r][c] = Math.random() < 0.9 ? 2 : 4;
+      return true;
+    }
+
+    // Инициализация новой игры
+    function initGame() {
+      board = createEmptyBoard();
+      score = 0;
+      gameOverFlag = false;
+      winAchieved = false;
+      messageOverlay.classList.remove('active');
+
+      // Добавляем две стартовые плитки
+      addRandomTile(board);
+      addRandomTile(board);
+
+      updateScoreDisplay();
+      renderBoard();
+    }
+
+    // Сброс игры (кнопка Новая игра)
+    function newGame() {
+      initGame();
+      // не сбрасываем рекорд, просто обновляем отображение best
+      bestDisplayEl.textContent = bestScore;
+    }
+
+    // --- Логика движения ---
+    function slideAndMerge(row) {
+      // Убираем нули
+      let filtered = row.filter(val => val !== 0);
+      let merged = [];
+      let skipNext = false;
+
+      for (let i = 0; i < filtered.length; i++) {
+        if (skipNext) {
+          skipNext = false;
+          continue;
+        }
+        if (i < filtered.length - 1 && filtered[i] === filtered[i + 1]) {
+          const mergedValue = filtered[i] * 2;
+          merged.push(mergedValue);
+          score += mergedValue;
+          skipNext = true;
+        } else {
+          merged.push(filtered[i]);
+        }
+      }
+
+      // Дополняем нулями до размера SIZE
+      while (merged.length < SIZE) {
+        merged.push(0);
+      }
+      return merged;
+    }
+
+    // Движение влево (для каждой строки)
+    function moveLeft(boardState) {
+      let moved = false;
+      const newBoard = boardState.map(row => {
+        const originalRow = [...row];
+        const newRow = slideAndMerge(originalRow);
+        if (JSON.stringify(originalRow) !== JSON.stringify(newRow)) {
+          moved = true;
+        }
+        return newRow;
+      });
+      return { board: newBoard, moved };
+    }
+
+    // Движение вправо (реверс -> slide -> реверс)
+    function moveRight(boardState) {
+      let moved = false;
+      const newBoard = boardState.map(row => {
+        const reversed = [...row].reverse();
+        const merged = slideAndMerge(reversed);
+        const newRow = merged.reverse();
+        if (JSON.stringify(row) !== JSON.stringify(newRow)) {
+          moved = true;
+        }
+        return newRow;
+      });
+      return { board: newBoard, moved };
+    }
+
+    // Транспонирование матрицы
+    function transpose(matrix) {
+      return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+    }
+
+    // Движение вверх
+    function moveUp(boardState) {
+      const transposed = transpose(boardState);
+      const { board: movedBoard, moved } = moveLeft(transposed);
+      const newBoard = transpose(movedBoard);
+      return { board: newBoard, moved };
+    }
+
+    // Движение вниз
+    function moveDown(boardState) {
+      const transposed = transpose(boardState);
+      const { board: movedBoard, moved } = moveRight(transposed);
+      const newBoard = transpose(movedBoard);
+      return { board: newBoard, moved };
+    }
+
+    // Проверка возможности хода (есть ли пустые ячейки или соседние одинаковые)
+    function canMove(boardState) {
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          if (boardState[r][c] === 0) return true;
+          if (c < SIZE - 1 && boardState[r][c] === boardState[r][c + 1]) return true;
+          if (r < SIZE - 1 && boardState[r][c] === boardState[r + 1][c]) return true;
+        }
+      }
+      return false;
+    }
+
+    // Проверка победы (наличие 2048) и вызов сообщения
+    function checkWinCondition() {
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          if (board[r][c] === 2048 && !winAchieved) {
+            winAchieved = true;
+            showMessage('🎉 Вы достигли 2048!', true);
+            return;
           }
         }
       }
     }
 
-    // Обновить холст из массива pixelData
-    function renderFullCanvas() {
-      for (let y = 0; y < CANVAS_SIZE; y++) {
-        for (let x = 0; x < CANVAS_SIZE; x++) {
-          const index = y * CANVAS_SIZE + x;
-          ctx.fillStyle = pixelData[index] || '#1c1c24';
-          ctx.fillRect(x, y, 1, 1);
-        }
-      }
-    }
-
-    // Установить пиксель (и отправить, если не из сети)
-    function setPixel(x, y, color, broadcast = true) {
-      if (x < 0 || x >= CANVAS_SIZE || y < 0 || y >= CANVAS_SIZE) return;
-      const index = y * CANVAS_SIZE + x;
-      if (pixelData[index] === color) return; // без изменений
-
-      pixelData[index] = color;
-      ctx.fillStyle = color;
-      ctx.fillRect(x, y, 1, 1);
-
-      if (broadcast && ws && connected) {
-        sendPixelUpdate(x, y, color);
-      }
-    }
-
-    // Отправка обновления пикселя
-    function sendPixelUpdate(x, y, color) {
-      if (!ws || ws.readyState !== WebSocket.OPEN) return;
-      const message = JSON.stringify({
-        type: 'pixel',
-        x: x,
-        y: y,
-        color: color
-      });
-      try {
-        ws.send(message);
-      } catch (e) {
-        console.warn('Ошибка отправки:', e);
-      }
-    }
-
-    // Отправка очистки холста
-    function sendClearCanvas() {
-      if (!ws || ws.readyState !== WebSocket.OPEN) return;
-      const message = JSON.stringify({
-        type: 'clear',
-        color: '#1c1c24' // цвет фона
-      });
-      try {
-        ws.send(message);
-      } catch (e) {
-        console.warn('Ошибка отправки clear:', e);
-      }
-    }
-
-    // Очистить локально и отправить всем
-    function clearCanvasAction() {
-      // Заполняем массив фоновым цветом
-      pixelData.fill('#1c1c24');
-      renderFullCanvas();
-      sendClearCanvas();
-    }
-
-    // ---------- ОБРАБОТЧИКИ СООБЩЕНИЙ WEB-SOCKET ----------
-    function handleMessage(event) {
-      try {
-        const data = JSON.parse(event.data);
-        if (!data || !data.type) return;
-
-        // Игнорируем сообщения, которые сами же и отправили (если сервер не echo с фильтрацией)
-        // Но публичный сервер может возвращать нам же. Используем флаг localUpdate для защиты,
-        // но проще проверять: если сообщение пришло и мы его применяем, перерисовываем.
-        // Чтобы избежать двойной перерисовки при локальном изменении, будем временно блокировать.
-        if (localUpdate) return;
-
-        switch (data.type) {
-          case 'pixel':
-            if (typeof data.x === 'number' && typeof data.y === 'number' && data.color) {
-              // Устанавливаем пиксель БЕЗ повторной отправки (broadcast = false)
-              setPixel(data.x, data.y, data.color, false);
-            }
-            break;
-          case 'clear':
-            // Очистка от другого игрока
-            pixelData.fill(data.color || '#1c1c24');
-            renderFullCanvas();
-            break;
-          case 'canvasState':
-            // Если сервер присылает полное состояние холста (массив цветов)
-            if (Array.isArray(data.pixels) && data.pixels.length === CANVAS_SIZE * CANVAS_SIZE) {
-              pixelData = [...data.pixels];
-              renderFullCanvas();
-            }
-            break;
-          default:
-            break;
-        }
-      } catch (e) {
-        console.warn('Ошибка обработки сообщения:', e);
-      }
-    }
-
-    // ---------- ПОДКЛЮЧЕНИЕ К СЕРВЕРУ ----------
-    function connectWebSocket() {
-      if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+    // Основное действие после хода
+    function performMove(direction) {
+      if (gameOverFlag) {
+        // Если игра окончена, но пользователь нажимает стрелки, можно показать сообщение или ничего
         return;
       }
 
-      // Закрываем предыдущее соединение, если есть
-      if (ws) {
-        ws.onclose = null;
-        ws.onerror = null;
-        ws.onmessage = null;
-        if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
-          ws.close();
-        }
+      let moveResult;
+      switch (direction) {
+        case 'left': moveResult = moveLeft(board); break;
+        case 'right': moveResult = moveRight(board); break;
+        case 'up': moveResult = moveUp(board); break;
+        case 'down': moveResult = moveDown(board); break;
+        default: return;
       }
 
-      statusText.textContent = 'подключение...';
-      connectionIndicator.classList.remove('connected');
+      if (moveResult.moved) {
+        board = moveResult.board;
+        addRandomTile(board);
+        updateScoreDisplay();
+        renderBoard();
+        checkWinCondition();
 
-      try {
-        ws = new WebSocket(WS_SERVER);
-      } catch (e) {
-        console.error('Ошибка создания WebSocket:', e);
-        scheduleReconnect();
-        return;
+        // Проверка на окончание игры
+        if (!canMove(board)) {
+          gameOverFlag = true;
+          showMessage('😔 Игра окончена!', false);
+        }
       }
-
-      ws.onopen = () => {
-        connected = true;
-        statusText.textContent = 'онлайн (совместное рисование)';
-        connectionIndicator.classList.add('connected');
-        console.log('WebSocket подключён');
-
-        // Запрашиваем текущее состояние холста (если сервер поддерживает)
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'requestCanvas' }));
-        }
-        // Сбрасываем таймер реконнекта
-        if (reconnectTimer) {
-          clearTimeout(reconnectTimer);
-          reconnectTimer = null;
-        }
-      };
-
-      ws.onmessage = (event) => {
-        // Чтобы избежать конфликта локальных изменений,
-        // устанавливаем флаг, если сообщение пришло не от нас.
-        // Публичный сервер часто шлёт нам наши же сообщения.
-        // Простейшая защита: если сообщение содержит пиксель, который мы только что установили,
-        // можно игнорировать. Но мы сделаем через временную блокировку при локальной отрисовке.
-        // Более надёжно: сравнивать с последними отправленными данными. 
-        // Для простоты используем флаг localUpdate.
-        handleMessage(event);
-      };
-
-      ws.onerror = (error) => {
-        console.error('Ошибка WebSocket:', error);
-        connected = false;
-        statusText.textContent = 'ошибка соединения';
-        connectionIndicator.classList.remove('connected');
-      };
-
-      ws.onclose = (event) => {
-        connected = false;
-        statusText.textContent = 'соединение прервано';
-        connectionIndicator.classList.remove('connected');
-        console.log('WebSocket закрыт');
-        ws = null;
-        scheduleReconnect();
-      };
+      // Если не сдвинулось — ничего не делаем
     }
 
-    function scheduleReconnect() {
-      if (reconnectTimer) clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(() => {
-        console.log('Попытка переподключения...');
-        connectWebSocket();
-      }, 3000);
+    function updateScoreDisplay() {
+      scoreDisplayEl.textContent = score;
+      updateBestScore(score);
     }
 
-    // ---------- ОБРАБОТЧИКИ ХОЛСТА (РИСОВАНИЕ) ----------
-    function getCanvasCoordsFromEvent(e) {
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = CANVAS_SIZE / rect.width;   // отношение реального размера к CSS
-      const scaleY = CANVAS_SIZE / rect.height;
+    // --- Отображение ---
+    function renderBoard() {
+      gameBoardEl.innerHTML = '';
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          const value = board[r][c];
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          if (value !== 0) {
+            cell.textContent = value;
+            // Определяем класс плитки
+            if (value <= 2048) {
+              cell.classList.add(`tile-${value}`);
+            } else {
+              cell.classList.add('tile-super'); // для чисел > 2048
+            }
+          }
+          gameBoardEl.appendChild(cell);
+        }
+      }
+    }
 
-      let clientX, clientY;
-
-      if (e.touches) {
-        // Сенсорное устройство
-        if (e.touches.length === 0) return null;
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-        e.preventDefault();
+    // Показ оверлея с сообщением
+    function showMessage(text, isWin = false) {
+      messageText.textContent = text;
+      messageOverlay.classList.add('active');
+      // Если это победа, кнопка "Продолжить" позволяет играть дальше
+      // Если проигрыш, кнопка тоже позволяет начать заново, но меняем текст?
+      if (!isWin) {
+        messageCloseBtn.textContent = 'Новая игра';
       } else {
-        clientX = e.clientX;
-        clientY = e.clientY;
-      }
-
-      // Координаты относительно canvas с учётом масштаба
-      const canvasX = (clientX - rect.left) * scaleX;
-      const canvasY = (clientY - rect.top) * scaleY;
-
-      const x = Math.floor(canvasX);
-      const y = Math.floor(canvasY);
-
-      if (x >= 0 && x < CANVAS_SIZE && y >= 0 && y < CANVAS_SIZE) {
-        return { x, y };
-      }
-      return null;
-    }
-
-    let isDrawing = false;
-
-    function drawAtPosition(e) {
-      const coords = getCanvasCoordsFromEvent(e);
-      if (!coords) return;
-
-      // Устанавливаем флаг, чтобы входящее сообщение не дублировало отрисовку
-      // (публичный сервер возвращает нам наше сообщение)
-      localUpdate = true;
-      setPixel(coords.x, coords.y, currentColor, true);
-      // Снимаем флаг после микро-задержки, чтобы серверное эхо не сработало
-      setTimeout(() => {
-        localUpdate = false;
-      }, 50);
-    }
-
-    function onMouseDown(e) {
-      e.preventDefault();
-      isDrawing = true;
-      drawAtPosition(e);
-    }
-
-    function onMouseMove(e) {
-      if (!isDrawing) return;
-      e.preventDefault();
-      drawAtPosition(e);
-    }
-
-    function onMouseUp(e) {
-      if (isDrawing) {
-        isDrawing = false;
+        messageCloseBtn.textContent = 'Продолжить';
       }
     }
 
-    function onMouseLeave(e) {
-      // Если мышь покидает холст, прекращаем рисование
-      if (isDrawing) {
-        isDrawing = false;
+    function hideMessage() {
+      messageOverlay.classList.remove('active');
+      // Если игра была окончена (проигрыш), при нажатии на кнопку в оверлее начинаем новую игру
+      if (gameOverFlag) {
+        newGame();
+      }
+      // Если это было окно победы и пользователь нажал "Продолжить", просто закрываем и играем дальше.
+      // gameOverFlag при победе не true, так что newGame не вызовется.
+    }
+
+    // --- Обработчики событий ---
+    function handleKeyDown(e) {
+      const key = e.key;
+      // Предотвращаем скролл страницы стрелками
+      if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight') {
+        e.preventDefault();
+        if (key === 'ArrowUp') performMove('up');
+        else if (key === 'ArrowDown') performMove('down');
+        else if (key === 'ArrowLeft') performMove('left');
+        else if (key === 'ArrowRight') performMove('right');
       }
     }
 
-    // Сенсорные события
-    function onTouchStart(e) {
-      e.preventDefault();
-      isDrawing = true;
-      drawAtPosition(e);
+    // Поддержка свайпов для мобильных устройств
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const minSwipeDistance = 30;
+
+    function handleTouchStart(e) {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
     }
 
-    function onTouchMove(e) {
-      e.preventDefault();
-      if (!isDrawing) return;
-      drawAtPosition(e);
+    function handleTouchEnd(e) {
+      if (!touchStartX || !touchStartY) return;
+
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+
+      const dx = touchEndX - touchStartX;
+      const dy = touchEndY - touchStartY;
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+
+      if (Math.max(absDx, absDy) < minSwipeDistance) {
+        // Слишком короткий свайп
+        touchStartX = 0;
+        touchStartY = 0;
+        return;
+      }
+
+      e.preventDefault(); // чтобы не скроллилась страница при свайпе по полю
+
+      if (absDx > absDy) {
+        // Горизонтальный свайп
+        if (dx > 0) performMove('right');
+        else performMove('left');
+      } else {
+        // Вертикальный свайп
+        if (dy > 0) performMove('down');
+        else performMove('up');
+      }
+
+      // Сброс координат
+      touchStartX = 0;
+      touchStartY = 0;
     }
 
-    function onTouchEnd(e) {
-      e.preventDefault();
-      isDrawing = false;
-    }
-
-    // ---------- ПРИВЯЗКА СОБЫТИЙ ----------
+    // Привязка событий
     function bindEvents() {
-      // Мышь
-      canvas.addEventListener('mousedown', onMouseDown);
-      canvas.addEventListener('mousemove', onMouseMove);
-      window.addEventListener('mouseup', onMouseUp);
-      canvas.addEventListener('mouseleave', onMouseLeave);
+      window.addEventListener('keydown', handleKeyDown);
 
-      // Сенсор
-      canvas.addEventListener('touchstart', onTouchStart, { passive: false });
-      canvas.addEventListener('touchmove', onTouchMove, { passive: false });
-      canvas.addEventListener('touchend', onTouchEnd);
-      canvas.addEventListener('touchcancel', onTouchEnd);
+      // Свайпы на игровом поле
+      gameBoardEl.addEventListener('touchstart', handleTouchStart, { passive: false });
+      gameBoardEl.addEventListener('touchend', handleTouchEnd, { passive: false });
+      // Предотвращаем нежелательное поведение touchmove
+      gameBoardEl.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 
-      // Кнопка очистки
-      clearBtn.addEventListener('click', () => {
-        clearCanvasAction();
-      });
-
-      // Выбор цвета
-      colorPicker.addEventListener('input', (e) => {
-        currentColor = e.target.value;
-      });
+      newGameBtn.addEventListener('click', newGame);
+      messageCloseBtn.addEventListener('click', hideMessage);
     }
 
-    // ---------- СТАРТ ----------
-    function initialRender() {
-      // Устанавливаем фон по умолчанию
-      pixelData.fill('#1c1c24');
-      renderFullCanvas();
+    // Старт
+    function startGame() {
+      bestScore = loadBestScore();
+      bestDisplayEl.textContent = bestScore;
+      initGame();
+      bindEvents();
     }
 
-    // Запуск всего
-    initialRender();
-    bindEvents();
-    connectWebSocket();
-
-    // Очистка при уходе со страницы (не обязательно, но хорошо)
-    window.addEventListener('beforeunload', () => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.close();
-      }
-      if (reconnectTimer) clearTimeout(reconnectTimer);
-    });
-
+    startGame();
   })();
 </script>
 </body>
