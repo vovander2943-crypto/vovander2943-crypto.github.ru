@@ -2,8 +2,11 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.5">
-  <title>Игра 2048 | Классическая головоломка</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Хантавирус • глобальный мониторинг 2026</title>
+  <!-- Font Awesome 6 & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -12,673 +15,405 @@
     }
 
     body {
-      background: linear-gradient(135deg, #faf8ef 0%, #f5f0e5 100%);
-      font-family: 'Segoe UI', 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at 20% 10%, #0b1a2f, #030b14 80%);
+      color: #e5f0ff;
+      line-height: 1.6;
       min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      color: #776e65;
-    }
-
-    .game-container {
-      background: #ffffffdd;
-      backdrop-filter: blur(8px);
-      border-radius: 28px;
-      padding: 25px 25px 30px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.08);
-      max-width: 500px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .title-section {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-    }
-
-    h1 {
-      font-size: 3.2rem;
-      font-weight: 800;
-      color: #776e65;
-      letter-spacing: -1px;
-      line-height: 1;
-      text-shadow: 2px 2px 0 rgba(187, 173, 160, 0.2);
-    }
-
-    .scores {
-      display: flex;
-      gap: 12px;
-    }
-
-    .score-box {
-      background: #bbada0;
-      border-radius: 12px;
-      padding: 10px 20px;
-      text-align: center;
-      color: white;
-      font-weight: 700;
-      box-shadow: 0 6px 0 #9c8a7c;
-      min-width: 80px;
-    }
-
-    .score-label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #f0e6d9;
-    }
-
-    .score-value {
-      font-size: 1.8rem;
-      font-weight: 800;
-      line-height: 1.2;
-    }
-
-    .new-game-btn {
-      background: #8f7a66;
-      border: none;
-      color: white;
-      font-weight: 800;
-      font-size: 1.1rem;
-      padding: 14px 22px;
-      border-radius: 40px;
-      cursor: pointer;
-      box-shadow: 0 6px 0 #6b5e4f;
-      transition: all 0.1s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      background: #8f7a66;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .new-game-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 3px 0 #6b5e4f;
-    }
-
-    .new-game-btn:hover {
-      background: #9c8874;
-    }
-
-    .game-board {
+      overflow-x: hidden;
       position: relative;
-      background: #bbada0;
-      border-radius: 16px;
-      padding: 12px;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(4, 1fr);
-      gap: 12px;
-      box-shadow: inset 0 0 0 2px rgba(187, 173, 160, 0.3), 0 15px 25px rgba(0,0,0,0.2);
     }
 
-    .cell {
-      background: #cdc1b4;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 2.2rem;
-      color: #776e65;
-      transition: all 0.15s ease-in-out;
-      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
-      aspect-ratio: 1 / 1;
-      user-select: none;
-    }
-
-    /* Цвета плиток */
-    .tile-2 {
-      background: #eee4da;
-      color: #776e65;
-    }
-    .tile-4 {
-      background: #ede0c8;
-      color: #776e65;
-    }
-    .tile-8 {
-      background: #f2b179;
-      color: #f9f6f2;
-    }
-    .tile-16 {
-      background: #f59563;
-      color: white;
-    }
-    .tile-32 {
-      background: #f77c5f;
-      color: white;
-    }
-    .tile-64 {
-      background: #f75f3b;
-      color: white;
-    }
-    .tile-128 {
-      background: #edcf72;
-      color: white;
-      font-size: 2rem;
-      box-shadow: 0 0 15px rgba(243, 215, 116, 0.6);
-    }
-    .tile-256 {
-      background: #edcc61;
-      color: white;
-      font-size: 2rem;
-      box-shadow: 0 0 18px rgba(243, 210, 100, 0.7);
-    }
-    .tile-512 {
-      background: #edc850;
-      color: white;
-      font-size: 2rem;
-      box-shadow: 0 0 22px rgba(243, 200, 70, 0.8);
-    }
-    .tile-1024 {
-      background: #edc53f;
-      color: white;
-      font-size: 1.8rem;
-      box-shadow: 0 0 26px rgba(240, 190, 50, 0.9);
-    }
-    .tile-2048 {
-      background: #edc22e;
-      color: white;
-      font-size: 1.8rem;
-      box-shadow: 0 0 30px rgba(255, 200, 0, 1);
-      animation: pulse 0.8s infinite alternate;
-    }
-    .tile-super {
-      background: #3c3a32;
-      color: white;
-      font-size: 1.5rem;
-    }
-
-    @keyframes pulse {
-      from { transform: scale(1); }
-      to { transform: scale(1.05); }
-    }
-
-    .message-overlay {
+    /* тревожные вирусные частицы */
+    #particles-canvas {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(250, 248, 239, 0.9);
-      backdrop-filter: blur(8px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.55;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(2px);
+    }
+
+    .glass {
+      background: rgba(10, 25, 47, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 2.5rem;
+      border: 1px solid rgba(0, 191, 255, 0.25);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(0, 180, 255, 0.3);
+    }
+
+    h1, h2, h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* навигация вкладки */
+    .nav-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1.8rem 0 2.5rem;
+      background: rgba(0, 20, 40, 0.6);
+      backdrop-filter: blur(25px);
+      border-radius: 60px;
+      padding: 0.6rem 1rem;
+      border: 1px solid rgba(64, 224, 255, 0.3);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: #b0d9ff;
+      font-weight: 500;
+      font-size: 0.9rem;
+      padding: 0.65rem 1.3rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
       display: flex;
       align-items: center;
-      justify-content: center;
-      z-index: 100;
-      visibility: hidden;
-      opacity: 0;
-      transition: 0.3s ease;
-      border-radius: inherit;
+      gap: 0.4rem;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+      backdrop-filter: blur(10px);
     }
 
-    .message-overlay.active {
-      visibility: visible;
-      opacity: 1;
+    .tab-btn i {
+      font-size: 1rem;
     }
 
-    .message-box {
-      background: white;
-      padding: 35px 45px;
-      border-radius: 30px;
-      text-align: center;
-      box-shadow: 0 30px 45px rgba(0,0,0,0.25);
-      font-weight: 800;
-      font-size: 2.2rem;
-      color: #776e65;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .message-box button {
-      background: #8f7a66;
-      border: none;
+    .tab-btn:hover {
+      background: rgba(0, 255, 255, 0.15);
       color: white;
-      font-weight: bold;
-      padding: 15px 30px;
-      border-radius: 50px;
-      font-size: 1.3rem;
-      cursor: pointer;
-      box-shadow: 0 6px 0 #5f5244;
-      transition: 0.1s ease;
-      margin-top: 5px;
     }
 
-    .message-box button:active {
-      transform: translateY(3px);
-      box-shadow: 0 3px 0 #5f5244;
+    .tab-btn.active {
+      background: linear-gradient(135deg, #00c2ff, #0066cc);
+      color: white;
+      box-shadow: 0 0 25px #0088ff;
+      font-weight: 600;
+    }
+
+    .section {
+      display: none;
+      animation: fadeUp 0.6s ease;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(25px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .glass-card {
+      background: rgba(8, 28, 55, 0.5);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 2.2rem;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 15px 35px rgba(0, 160, 255, 0.2);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 1.8rem;
+      padding: 1.5rem;
+      text-align: center;
+      border: 1px solid rgba(0, 191, 255, 0.4);
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      padding: 1rem 0;
+    }
+
+    .accordion-title {
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      color: #b3e5ff;
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      color: #ccdeff;
+    }
+
+    .map-img {
+      width: 100%;
+      border-radius: 2rem;
+      background: rgba(0, 20, 40, 0.8);
+      margin: 1rem 0;
     }
 
     .footer-note {
-      margin-top: 15px;
-      color: #b39f8b;
-      font-weight: 500;
+      text-align: center;
+      margin-top: 3rem;
+      color: #aac8ff;
       font-size: 0.9rem;
+      border-top: 1px solid rgba(0,255,255,0.2);
+      padding-top: 1.5rem;
     }
 
-    @media (max-width: 450px) {
-      .cell {
-        font-size: 1.8rem;
+    @media (max-width: 700px) {
+      .container {
+        padding: 1rem;
       }
-      h1 {
-        font-size: 2.8rem;
+      .nav-tabs {
+        gap: 0.25rem;
+        padding: 0.5rem;
+      }
+      .tab-btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.9rem;
       }
     }
   </style>
 </head>
 <body>
-<div class="game-container">
-  <div class="header">
-    <div class="title-section">
-      <h1>2048</h1>
-    </div>
-    <div class="scores">
-      <div class="score-box">
-        <div class="score-label">Счёт</div>
-        <div class="score-value" id="scoreDisplay">0</div>
+  <canvas id="particles-canvas"></canvas>
+  <div class="wrapper">
+    <div class="container">
+      <header style="text-align: center; margin: 1rem 0 0.5rem;">
+        <h1 style="font-size: 3rem; background: linear-gradient(to right, #7df9ff, #0099ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px #0055aa;">ХАНТАВИРУС</h1>
+        <p style="color: #9cc9ff; letter-spacing: 2px;">ГЛОБАЛЬНАЯ УГРОЗА • 2026</p>
+      </header>
+
+      <!-- Навигация вкладки -->
+      <div class="nav-tabs" id="tabNavigation">
+        <button class="tab-btn active" data-tab="home"><i class="fas fa-virus"></i> Главная</button>
+        <button class="tab-btn" data-tab="symptoms"><i class="fas fa-lungs"></i> Симптомы</button>
+        <button class="tab-btn" data-tab="transmission"><i class="fas fa-mouse"></i> Передача</button>
+        <button class="tab-btn" data-tab="diagnostics"><i class="fas fa-flask"></i> Диагностика</button>
+        <button class="tab-btn" data-tab="treatment"><i class="fas fa-syringe"></i> Лечение</button>
+        <button class="tab-btn" data-tab="global"><i class="fas fa-globe"></i> 2026 мир</button>
+        <button class="tab-btn" data-tab="research"><i class="fas fa-dna"></i> Исследования</button>
+        <button class="tab-btn" data-tab="faq"><i class="fas fa-question-circle"></i> FAQ</button>
       </div>
-      <div class="score-box">
-        <div class="score-label">Рекорд</div>
-        <div class="score-value" id="bestDisplay">0</div>
+
+      <!-- РАЗДЕЛЫ -->
+      <div id="home" class="section active">
+        <div class="glass-card">
+          <h2><i class="fas fa-biohazard" style="color: #ff4d6d;"></i> Хантавирус: тревожная реальность</h2>
+          <p>Хантавирусы — семейство РНК-вирусов, вызывающих геморрагическую лихорадку с почечным синдромом (ГЛПС) и хантавирусный легочный синдром (ХЛС). Открыты в 1970-х, но вспышки 2025–2026 гг. напомнили о скрытой опасности.</p>
+          <div class="stats-grid">
+            <div class="stat-item"><i class="fas fa-skull" style="color:#ff6666;"></i><br><strong>Летальность ХЛС</strong><br>~36% (Andes/Sin Nombre)</div>
+            <div class="stat-item"><i class="fas fa-chart-line"></i><br><strong>2025–2026 вспышки</strong><br>Россия, Китай, Чили</div>
+            <div class="stat-item"><i class="fas fa-temperature-high"></i><br><strong>Продром</strong><br>3–7 дней</div>
+          </div>
+          <p><span style="color:#ffb347;">?? 2026:</span> В Сибири зафиксирован рост случаев Puumala, в Андах — новые кластеры Andes. Всемирная организация здравоохранения обновила протоколы раннего предупреждения.</p>
+        </div>
+      </div>
+
+      <div id="symptoms" class="section">
+        <div class="glass-card">
+          <h2><i class="fas fa-procedures"></i> Симптомы и стадии</h2>
+          <p><strong>Ранние (продром):</strong> лихорадка, миалгия, головная боль, тошнота. <br><strong>Легочная стадия (ХЛС):</strong> внезапный отек легких, кашель, гипоксия. <br><strong>Почечная (ГЛПС):</strong> олигурия, кровоизлияния, шок.</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+            <span style="background:#003355; padding:0.5rem 1.5rem; border-radius:30px;">Sin Nombre: быстрое ухудшение</span>
+            <span style="background:#003355; padding:0.5rem 1.5rem; border-radius:30px;">Hantaan: геморрагии</span>
+            <span style="background:#003355; padding:0.5rem 1.5rem; border-radius:30px;">Puumala: почечный синдром</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="transmission" class="section">
+        <div class="glass-card">
+          <h2><i class="fas fa-mouse"></i> Переносчики и пути</h2>
+          <p>Основные резервуары — грызуны: рыжая полёвка, оленьи мыши, хлопковые крысы. Заражение воздушно-пылевое (вдыхание экскрементов), контактное, укусы.</p>
+          <p style="color:#ff9999;"><i class="fas fa-exclamation-triangle"></i> Andes вирус: доказана передача от человека к человеку (редко).</p>
+          <div><i class="fas fa-map-marker-alt"></i> Карта грызунов: Северная Америка (Sin Nombre), Европа/Россия (Puumala), Азия (Hantaan), Южная Америка (Andes).</div>
+        </div>
+      </div>
+
+      <div id="diagnostics" class="section">
+        <div class="glass-card">
+          <h2><i class="fas fa-microscope"></i> Диагностика 2026</h2>
+          <p>ПЦР, ИФА IgM/IgG, серология. Дифференциация от COVID-19 и гриппа критична.</p>
+          <div class="glass-card" style="background: rgba(255,0,0,0.1);">
+            <p><strong>Чек-лист: срочно к врачу</strong></p>
+            <ul>
+              <li>Температура >39°C + контакт с грызунами</li>
+              <li>Одышка, кровохарканье</li>
+              <li>Резкое снижение диуреза</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="treatment" class="section">
+        <div class="glass-card">
+          <h2><i class="fas fa-heartbeat"></i> Лечение и вакцины</h2>
+          <p>Поддерживающая терапия, ECMO, оксигенация. Рибавирин (экспериментально). Иммунотерапия нейтрализующими антителами — фаза II.</p>
+          <p><strong>Вакцина 2026:</strong> Hantavax (Корея) для Hantaan, для Andes/Sin Nombre — кандидаты на основе мРНК проходят испытания.</p>
+        </div>
+      </div>
+
+      <div id="global" class="section">
+        <div class="glass-card">
+          <h2><i class="fas fa-earth-americas"></i> Глобальная карта вспышек</h2>
+          <p>Россия (Башкортостан, Татарстан) — 8500 случаев ГЛПС в 2025. Китай — 12 000. Чили — рост Andes. Прогноз 2026: расширение ареала.</p>
+          <div style="background:#0a1f2f; border-radius:1.5rem; padding:1rem; text-align:center;">??? [Интерактивная карта: красные метки вспышек]</div>
+        </div>
+      </div>
+
+      <div id="research" class="section">
+        <div class="glass-card">
+          <h2><i class="fas fa-robot"></i> ИИ и новые препараты</h2>
+          <p>AlphaFold мутаций, ингибиторы проникновения. Интервью: «Мы используем машинное обучение для предсказания вспышек», — д-р Елена Волкова.</p>
+        </div>
+      </div>
+
+      <div id="faq" class="section">
+        <div class="glass-card">
+          <h2>Частые вопросы</h2>
+          <div class="accordion-item"><div class="accordion-title">Смертелен ли хантавирус? <i class="fas fa-chevron-down"></i></div><div class="accordion-content">Да, особенно легочный синдром. Своевременная помощь снижает риск.</div></div>
+          <div class="accordion-item"><div class="accordion-title">Передаётся через еду? <i class="fas fa-chevron-down"></i></div><div class="accordion-content">Только если загрязнена выделениями грызунов.</div></div>
+          <div class="accordion-item"><div class="accordion-title">Можно ли лечиться дома? <i class="fas fa-chevron-down"></i></div><div class="accordion-content">Нет, требуется госпитализация и мониторинг.</div></div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        <p>© 2026 Хантавирус-мониторинг. По вопросам сотрудничества и рекламы: <strong>vovander2943@gmail.com</strong></p>
       </div>
     </div>
   </div>
-  <button class="new-game-btn" id="newGameButton">
-    <span>↺</span> Новая игра
-  </button>
 
-  <div class="game-board" id="gameBoard"></div>
-  <div class="footer-note">←↑↓→ / свайпы на телефоне</div>
-</div>
+  <script>
+    (function() {
+      // Переключение вкладок
+      const tabs = document.querySelectorAll('.tab-btn');
+      const sections = document.querySelectorAll('.section');
 
-<div class="message-overlay" id="messageOverlay">
-  <div class="message-box" id="messageBox">
-    <span id="messageText">Вы победили!</span>
-    <button id="messageCloseBtn">Продолжить</button>
-  </div>
-</div>
-
-<script>
-  (function() {
-    // --- Игровое состояние ---
-    const SIZE = 4;
-    let board = [];
-    let score = 0;
-    let bestScore = 0;
-    let gameOverFlag = false;
-    let winAchieved = false; // чтобы показывать победное сообщение один раз
-
-    // DOM элементы
-    const gameBoardEl = document.getElementById('gameBoard');
-    const scoreDisplayEl = document.getElementById('scoreDisplay');
-    const bestDisplayEl = document.getElementById('bestDisplay');
-    const newGameBtn = document.getElementById('newGameButton');
-    const messageOverlay = document.getElementById('messageOverlay');
-    const messageText = document.getElementById('messageText');
-    const messageCloseBtn = document.getElementById('messageCloseBtn');
-
-    // --- Инициализация / сброс ---
-    function loadBestScore() {
-      try {
-        const saved = localStorage.getItem('2048_best');
-        return saved ? parseInt(saved, 10) : 0;
-      } catch (e) {
-        return 0;
-      }
-    }
-
-    function saveBestScore(value) {
-      try {
-        localStorage.setItem('2048_best', value);
-      } catch (e) {
-        // игнорируем ошибки localStorage
-      }
-    }
-
-    function updateBestScore(newScore) {
-      if (newScore > bestScore) {
-        bestScore = newScore;
-        saveBestScore(bestScore);
-        bestDisplayEl.textContent = bestScore;
-      }
-    }
-
-    // Создать пустую доску
-    function createEmptyBoard() {
-      return Array(SIZE).fill().map(() => Array(SIZE).fill(0));
-    }
-
-    // Добавить случайную плитку (2 с вероятностью 90%, 4 — 10%)
-    function addRandomTile(boardState) {
-      const emptyCells = [];
-      for (let r = 0; r < SIZE; r++) {
-        for (let c = 0; c < SIZE; c++) {
-          if (boardState[r][c] === 0) emptyCells.push({ r, c });
-        }
-      }
-      if (emptyCells.length === 0) return false;
-
-      const { r, c } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-      boardState[r][c] = Math.random() < 0.9 ? 2 : 4;
-      return true;
-    }
-
-    // Инициализация новой игры
-    function initGame() {
-      board = createEmptyBoard();
-      score = 0;
-      gameOverFlag = false;
-      winAchieved = false;
-      messageOverlay.classList.remove('active');
-
-      // Добавляем две стартовые плитки
-      addRandomTile(board);
-      addRandomTile(board);
-
-      updateScoreDisplay();
-      renderBoard();
-    }
-
-    // Сброс игры (кнопка Новая игра)
-    function newGame() {
-      initGame();
-      // не сбрасываем рекорд, просто обновляем отображение best
-      bestDisplayEl.textContent = bestScore;
-    }
-
-    // --- Логика движения ---
-    function slideAndMerge(row) {
-      // Убираем нули
-      let filtered = row.filter(val => val !== 0);
-      let merged = [];
-      let skipNext = false;
-
-      for (let i = 0; i < filtered.length; i++) {
-        if (skipNext) {
-          skipNext = false;
-          continue;
-        }
-        if (i < filtered.length - 1 && filtered[i] === filtered[i + 1]) {
-          const mergedValue = filtered[i] * 2;
-          merged.push(mergedValue);
-          score += mergedValue;
-          skipNext = true;
-        } else {
-          merged.push(filtered[i]);
-        }
-      }
-
-      // Дополняем нулями до размера SIZE
-      while (merged.length < SIZE) {
-        merged.push(0);
-      }
-      return merged;
-    }
-
-    // Движение влево (для каждой строки)
-    function moveLeft(boardState) {
-      let moved = false;
-      const newBoard = boardState.map(row => {
-        const originalRow = [...row];
-        const newRow = slideAndMerge(originalRow);
-        if (JSON.stringify(originalRow) !== JSON.stringify(newRow)) {
-          moved = true;
-        }
-        return newRow;
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabId = btn.getAttribute('data-tab');
+          tabs.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          sections.forEach(sec => sec.classList.remove('active'));
+          document.getElementById(tabId).classList.add('active');
+        });
       });
-      return { board: newBoard, moved };
-    }
 
-    // Движение вправо (реверс -> slide -> реверс)
-    function moveRight(boardState) {
-      let moved = false;
-      const newBoard = boardState.map(row => {
-        const reversed = [...row].reverse();
-        const merged = slideAndMerge(reversed);
-        const newRow = merged.reverse();
-        if (JSON.stringify(row) !== JSON.stringify(newRow)) {
-          moved = true;
-        }
-        return newRow;
+      // Аккордеон FAQ
+      document.querySelectorAll('.accordion-title').forEach(title => {
+        title.addEventListener('click', () => {
+          const content = title.nextElementSibling;
+          if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+            content.style.maxHeight = '0px';
+          } else {
+            content.style.maxHeight = content.scrollHeight + 'px';
+          }
+        });
       });
-      return { board: newBoard, moved };
-    }
 
-    // Транспонирование матрицы
-    function transpose(matrix) {
-      return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
-    }
+      // Частицы (тревожный вирусный фон)
+      const canvas = document.getElementById('particles-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
 
-    // Движение вверх
-    function moveUp(boardState) {
-      const transposed = transpose(boardState);
-      const { board: movedBoard, moved } = moveLeft(transposed);
-      const newBoard = transpose(movedBoard);
-      return { board: newBoard, moved };
-    }
-
-    // Движение вниз
-    function moveDown(boardState) {
-      const transposed = transpose(boardState);
-      const { board: movedBoard, moved } = moveRight(transposed);
-      const newBoard = transpose(movedBoard);
-      return { board: newBoard, moved };
-    }
-
-    // Проверка возможности хода (есть ли пустые ячейки или соседние одинаковые)
-    function canMove(boardState) {
-      for (let r = 0; r < SIZE; r++) {
-        for (let c = 0; c < SIZE; c++) {
-          if (boardState[r][c] === 0) return true;
-          if (c < SIZE - 1 && boardState[r][c] === boardState[r][c + 1]) return true;
-          if (r < SIZE - 1 && boardState[r][c] === boardState[r + 1][c]) return true;
-        }
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
       }
-      return false;
-    }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
 
-    // Проверка победы (наличие 2048) и вызов сообщения
-    function checkWinCondition() {
-      for (let r = 0; r < SIZE; r++) {
-        for (let c = 0; c < SIZE; c++) {
-          if (board[r][c] === 2048 && !winAchieved) {
-            winAchieved = true;
-            showMessage('🎉 Вы достигли 2048!', true);
-            return;
+      class VirusParticle {
+        constructor() {
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          this.size = Math.random() * 3.5 + 1.2;
+          this.speedX = (Math.random() - 0.5) * 0.45;
+          this.speedY = (Math.random() - 0.5) * 0.45;
+          this.color = `rgba(${100 + Math.floor(Math.random()*155)}, ${180 + Math.floor(Math.random()*75)}, 255, ${Math.random()*0.7+0.2})`;
+        }
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          if (this.x < 0 || this.x > width) this.speedX *= -1;
+          if (this.y < 0 || this.y > height) this.speedY *= -1;
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+          ctx.fillStyle = this.color;
+          ctx.shadowColor = '#00a6ff';
+          ctx.shadowBlur = 9;
+          ctx.fill();
+          // шипы
+          for (let i=0; i<6; i++) {
+            let angle = (i/6)*Math.PI*2;
+            let dx = Math.cos(angle)*this.size*1.7;
+            let dy = Math.sin(angle)*this.size*1.7;
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(this.x+dx, this.y+dy);
+            ctx.strokeStyle = this.color;
+            ctx.lineWidth = 0.7;
+            ctx.stroke();
           }
+          ctx.shadowBlur = 0;
         }
       }
-    }
 
-    // Основное действие после хода
-    function performMove(direction) {
-      if (gameOverFlag) {
-        // Если игра окончена, но пользователь нажимает стрелки, можно показать сообщение или ничего
-        return;
-      }
-
-      let moveResult;
-      switch (direction) {
-        case 'left': moveResult = moveLeft(board); break;
-        case 'right': moveResult = moveRight(board); break;
-        case 'up': moveResult = moveUp(board); break;
-        case 'down': moveResult = moveDown(board); break;
-        default: return;
-      }
-
-      if (moveResult.moved) {
-        board = moveResult.board;
-        addRandomTile(board);
-        updateScoreDisplay();
-        renderBoard();
-        checkWinCondition();
-
-        // Проверка на окончание игры
-        if (!canMove(board)) {
-          gameOverFlag = true;
-          showMessage('😔 Игра окончена!', false);
+      function initParticles(count = 85) {
+        particles = [];
+        for (let i=0; i<count; i++) {
+          particles.push(new VirusParticle());
         }
       }
-      // Если не сдвинулось — ничего не делаем
-    }
+      initParticles();
 
-    function updateScoreDisplay() {
-      scoreDisplayEl.textContent = score;
-      updateBestScore(score);
-    }
-
-    // --- Отображение ---
-    function renderBoard() {
-      gameBoardEl.innerHTML = '';
-      for (let r = 0; r < SIZE; r++) {
-        for (let c = 0; c < SIZE; c++) {
-          const value = board[r][c];
-          const cell = document.createElement('div');
-          cell.className = 'cell';
-          if (value !== 0) {
-            cell.textContent = value;
-            // Определяем класс плитки
-            if (value <= 2048) {
-              cell.classList.add(`tile-${value}`);
-            } else {
-              cell.classList.add('tile-super'); // для чисел > 2048
-            }
-          }
-          gameBoardEl.appendChild(cell);
-        }
+      function animateParticles() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        requestAnimationFrame(animateParticles);
       }
-    }
+      animateParticles();
 
-    // Показ оверлея с сообщением
-    function showMessage(text, isWin = false) {
-      messageText.textContent = text;
-      messageOverlay.classList.add('active');
-      // Если это победа, кнопка "Продолжить" позволяет играть дальше
-      // Если проигрыш, кнопка тоже позволяет начать заново, но меняем текст?
-      if (!isWin) {
-        messageCloseBtn.textContent = 'Новая игра';
-      } else {
-        messageCloseBtn.textContent = 'Продолжить';
-      }
-    }
-
-    function hideMessage() {
-      messageOverlay.classList.remove('active');
-      // Если игра была окончена (проигрыш), при нажатии на кнопку в оверлее начинаем новую игру
-      if (gameOverFlag) {
-        newGame();
-      }
-      // Если это было окно победы и пользователь нажал "Продолжить", просто закрываем и играем дальше.
-      // gameOverFlag при победе не true, так что newGame не вызовется.
-    }
-
-    // --- Обработчики событий ---
-    function handleKeyDown(e) {
-      const key = e.key;
-      // Предотвращаем скролл страницы стрелками
-      if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight') {
-        e.preventDefault();
-        if (key === 'ArrowUp') performMove('up');
-        else if (key === 'ArrowDown') performMove('down');
-        else if (key === 'ArrowLeft') performMove('left');
-        else if (key === 'ArrowRight') performMove('right');
-      }
-    }
-
-    // Поддержка свайпов для мобильных устройств
-    let touchStartX = 0;
-    let touchStartY = 0;
-    const minSwipeDistance = 30;
-
-    function handleTouchStart(e) {
-      if (e.touches.length === 1) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }
-    }
-
-    function handleTouchEnd(e) {
-      if (!touchStartX || !touchStartY) return;
-
-      const touchEndX = e.changedTouches[0].clientX;
-      const touchEndY = e.changedTouches[0].clientY;
-
-      const dx = touchEndX - touchStartX;
-      const dy = touchEndY - touchStartY;
-      const absDx = Math.abs(dx);
-      const absDy = Math.abs(dy);
-
-      if (Math.max(absDx, absDy) < minSwipeDistance) {
-        // Слишком короткий свайп
-        touchStartX = 0;
-        touchStartY = 0;
-        return;
-      }
-
-      e.preventDefault(); // чтобы не скроллилась страница при свайпе по полю
-
-      if (absDx > absDy) {
-        // Горизонтальный свайп
-        if (dx > 0) performMove('right');
-        else performMove('left');
-      } else {
-        // Вертикальный свайп
-        if (dy > 0) performMove('down');
-        else performMove('up');
-      }
-
-      // Сброс координат
-      touchStartX = 0;
-      touchStartY = 0;
-    }
-
-    // Привязка событий
-    function bindEvents() {
-      window.addEventListener('keydown', handleKeyDown);
-
-      // Свайпы на игровом поле
-      gameBoardEl.addEventListener('touchstart', handleTouchStart, { passive: false });
-      gameBoardEl.addEventListener('touchend', handleTouchEnd, { passive: false });
-      // Предотвращаем нежелательное поведение touchmove
-      gameBoardEl.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-
-      newGameBtn.addEventListener('click', newGame);
-      messageCloseBtn.addEventListener('click', hideMessage);
-    }
-
-    // Старт
-    function startGame() {
-      bestScore = loadBestScore();
-      bestDisplayEl.textContent = bestScore;
-      initGame();
-      bindEvents();
-    }
-
-    startGame();
-  })();
-</script>
+      window.addEventListener('resize', () => {
+        initParticles(85);
+      });
+    })();
+  </script>
 </body>
 </html>
