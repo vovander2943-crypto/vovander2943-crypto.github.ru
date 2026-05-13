@@ -1,1016 +1,370 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
+  <title>Basic Frogger HTML Game</title>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Minecraft 3D - Мир 10x10 | Полет | 60 FPS</title>
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #000;
-    }
-    #crosshair {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 24px;
-      height: 24px;
-      pointer-events: none;
-      z-index: 100;
-      filter: drop-shadow(0 0 2px rgba(0,0,0,0.8));
-    }
-    #crosshair::before, #crosshair::after {
-      content: '';
-      position: absolute;
-      background: white;
-      opacity: 0.9;
-    }
-    #crosshair::before {
-      width: 2px;
-      height: 24px;
-      left: 11px;
-      top: 0;
-    }
-    #crosshair::after {
-      width: 24px;
-      height: 2px;
-      left: 0;
-      top: 11px;
-    }
-    #hotbar {
-      position: fixed;
-      bottom: 15px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 3px;
-      background: rgba(20,20,20,0.85);
-      padding: 5px 8px;
-      border-radius: 10px;
-      z-index: 200;
-      border: 2px solid #444;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-    }
-    .slot {
-      width: 50px;
-      height: 50px;
-      background: rgba(30,30,30,0.9);
-      border: 2px solid #3a3a3a;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      color: white;
-      font-weight: bold;
-      font-size: 12px;
-      text-shadow: 2px 2px 0 #000;
-      transition: all 0.15s;
-      box-sizing: border-box;
-      cursor: pointer;
-    }
-    .slot:hover {
-      border-color: #888;
-      background: rgba(50,50,50,0.9);
-    }
-    .slot.active {
-      border-color: #fff;
-      box-shadow: 0 0 12px #ffffffcc, inset 0 0 6px rgba(255,255,255,0.3);
-      transform: scale(1.08);
-      background: rgba(70,70,70,0.95);
-    }
-    .slot .count {
-      position: absolute;
-      bottom: 2px;
-      right: 4px;
-      font-size: 11px;
-      color: #fff;
-      text-shadow: 1px 1px 0 #000;
-      background: rgba(0,0,0,0.5);
-      padding: 0 3px;
-      border-radius: 8px;
-    }
-    #fps-counter {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: rgba(0,0,0,0.8);
-      color: #0f0;
-      padding: 4px 12px;
-      border-radius: 15px;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      z-index: 300;
-      backdrop-filter: blur(4px);
-      border: 1px solid #0f0;
-    }
-    #flight-mode {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      background: rgba(0,0,0,0.8);
-      color: #ff0;
-      padding: 4px 12px;
-      border-radius: 15px;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      z-index: 300;
-      backdrop-filter: blur(4px);
-      border: 1px solid #ff0;
-    }
-    #world-info {
-      position: fixed;
-      top: 50px;
-      left: 15px;
-      background: rgba(0,0,0,0.7);
-      color: #fff;
-      padding: 3px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      z-index: 300;
-      backdrop-filter: blur(4px);
-    }
-    #block-info {
-      position: fixed;
-      top: 15px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.75);
-      color: #fff;
-      padding: 4px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      backdrop-filter: blur(4px);
-      pointer-events: none;
-      z-index: 150;
-    }
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   </style>
 </head>
 <body>
-  <div id="crosshair"></div>
-  <div id="fps-counter">FPS: 60</div>
-  <div id="flight-mode">✈️ Полет: ВЫКЛ</div>
-  <div id="world-info">🌍 Мир: 10×10</div>
-  <div id="block-info">🎮 Нажмите для игры | WASD | Пробел/Shift | F - полет</div>
-  <div id="hotbar"></div>
+<canvas width="624" height="720" id="game"></canvas>
+<script>
+const canvas = document.getElementById('game');
+const context = canvas.getContext('2d');
 
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
-      }
-    }
-  </script>
+const grid = 48;
+const gridGap = 10;
 
-  <script type="module">
-    import * as THREE from 'three';
-    import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+// a simple sprite prototype function
+function Sprite(props) {
+  // shortcut for assigning all object properties to the sprite
+  Object.assign(this, props);
+}
+Sprite.prototype.render = function() {
+  context.fillStyle = this.color;
 
-    // ========== КОНСТАНТЫ ==========
-    const TARGET_FPS = 60;
-    const FRAME_TIME = 1000 / TARGET_FPS;
-    const TEX_SIZE = 8;
-    const WORLD_SIZE = 10; // Мир 10x10
-    
-    // ========== ЗВУКИ ==========
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    let audioCtx;
-    function initAudio() {
-      if (!audioCtx) audioCtx = new AudioCtx();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-    }
-    function playSound(type) {
-      if (!audioCtx) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-      
-      switch(type) {
-        case 'step':
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(80 + Math.random() * 40, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-          osc.stop(audioCtx.currentTime + 0.05);
-          break;
-        case 'break':
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-          osc.stop(audioCtx.currentTime + 0.1);
-          break;
-        case 'place':
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(250, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-          osc.stop(audioCtx.currentTime + 0.08);
-          break;
-        default:
-          osc.stop(audioCtx.currentTime + 0.05);
-      }
-      osc.start();
-    }
-
-    // ========== ГЕНЕРАТОР ТЕКСТУР 8x8 ==========
-    function createCanvasTexture(width, height, drawFn) {
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      drawFn(ctx, width, height);
-      const texture = new THREE.CanvasTexture(canvas);
-      texture.magFilter = THREE.NearestFilter;
-      texture.minFilter = THREE.NearestFilter;
-      return texture;
-    }
-
-    function fillTexture(ctx, w, h, color, noise = 15) {
-      for (let x = 0; x < w; x++) {
-        for (let y = 0; y < h; y++) {
-          const r = Math.max(0, Math.min(255, ((color >> 16) & 0xFF) + Math.floor(Math.random() * noise - noise/2)));
-          const g = Math.max(0, Math.min(255, ((color >> 8) & 0xFF) + Math.floor(Math.random() * noise - noise/2)));
-          const b = Math.max(0, Math.min(255, (color & 0xFF) + Math.floor(Math.random() * noise - noise/2)));
-          ctx.fillStyle = `rgb(${r},${g},${b})`;
-          ctx.fillRect(x, y, 1, 1);
-        }
-      }
-    }
-
-    const textures = {};
-    
-    function generateAllTextures() {
-      textures.grass_top = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0x6B9B37, 12);
-        ctx.fillStyle = '#4a7a20';
-        for (let i = 0; i < 5; i++) ctx.fillRect(Math.floor(Math.random()*w), Math.floor(Math.random()*h), 1, 1);
-      });
-      
-      textures.grass_side = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0x8B6B4D, 10);
-        for (let x = 0; x < w; x++)
-          for (let y = 0; y < 2; y++)
-            ctx.fillStyle = `rgb(${80+Math.random()*40},${120+Math.random()*40},${30+Math.random()*20})`,
-            ctx.fillRect(x, y, 1, 1);
-      });
-      
-      textures.dirt = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0x8B5A2B, 15);
-        ctx.fillStyle = '#6B4226';
-        ctx.fillRect(3, 2, 2, 2);
-      });
-      
-      textures.stone = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0x7F7F7F, 20);
-        ctx.strokeStyle = '#5a5a5a';
-        ctx.beginPath();
-        ctx.moveTo(2, 0); ctx.lineTo(4, 4); ctx.stroke();
-      });
-      
-      textures.cobblestone = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0x6B6B6B, 15);
-        ctx.fillStyle = '#555';
-        ctx.fillRect(1, 1, 3, 3);
-      });
-      
-      textures.sand = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0xE8D9A0, 10);
-      });
-      
-      textures.gravel = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0x9B8B7A, 15);
-        ctx.fillStyle = '#7a6b5a';
-        ctx.fillRect(2, 2, 2, 2);
-      });
-      
-      textures.oak_log = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0x8B6B4D, 8);
-        ctx.strokeStyle = '#6B4B2D';
-        for (let y = 2; y < h; y += 3) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(w, y);
-          ctx.stroke();
-        }
-      });
-      
-      textures.oak_log_top = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0xA0704D, 8);
-        ctx.strokeStyle = '#8B6040';
-        ctx.beginPath();
-        ctx.arc(w/2, h/2, 2, 0, Math.PI*2);
-        ctx.stroke();
-      });
-      
-      textures.oak_leaves = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0x3A7728, 20);
-        for (let i = 0; i < 8; i++)
-          ctx.fillStyle = `rgba(30,${80+Math.random()*40},20,0.7)`,
-          ctx.fillRect(Math.floor(Math.random()*w), Math.floor(Math.random()*h), 2, 2);
-      });
-      
-      textures.birch_log = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0xD4C4A8, 8);
-        ctx.strokeStyle = '#C4B498';
-        for (let y = 2; y < h; y += 3) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(w, y);
-          ctx.stroke();
-        }
-      });
-      
-      textures.birch_log_top = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0xE4D4B8, 6);
-        ctx.strokeStyle = '#D4C4A8';
-        ctx.beginPath();
-        ctx.arc(w/2, h/2, 2, 0, Math.PI*2);
-        ctx.stroke();
-      });
-      
-      textures.birch_leaves = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0x5C8F4A, 15);
-        for (let i = 0; i < 6; i++)
-          ctx.fillStyle = `rgba(70,160,70,0.6)`,
-          ctx.fillRect(Math.floor(Math.random()*w), Math.floor(Math.random()*h), 2, 2);
-      });
-      
-      textures.planks = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0xBC8F4F, 8);
-        ctx.strokeStyle = '#A07040';
-        for (let y = 0; y < h; y += 4) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(w, y);
-          ctx.stroke();
-        }
-      });
-      
-      textures.glass = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        ctx.fillStyle = 'rgba(170, 221, 255, 0.3)';
-        ctx.fillRect(0, 0, w, h);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.strokeRect(1, 1, w-2, h-2);
-      });
-      
-      textures.bricks = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0xB53C1A, 12);
-        ctx.strokeStyle = '#8B2500';
-        for (let y = 0; y < h; y += 4) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(w, y);
-          ctx.stroke();
-        }
-      });
-      
-      textures.bookshelf = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0xD2B48C, 8);
-        ctx.fillStyle = '#8B6B4D';
-        ctx.fillRect(0, 3, w, 1);
-        ctx.fillStyle = '#ff4444';
-        ctx.fillRect(1, 0, 2, 3);
-      });
-      
-      textures.obsidian = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0x1A1A2E, 10);
-        ctx.strokeStyle = '#4a2060';
-        ctx.beginPath();
-        ctx.moveTo(0, 4); ctx.lineTo(8, 4); ctx.stroke();
-      });
-      
-      const createOre = (stoneColor, oreColor) => createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, stoneColor, 15);
-        ctx.fillStyle = oreColor;
-        ctx.fillRect(3, 2, 2, 2);
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(3, 2, 1, 1);
-      });
-      
-      textures.diamond_ore = createOre(0x7F7F7F, '#4DD0E1');
-      textures.gold_ore = createOre(0x7F7F7F, '#FFD54F');
-      textures.iron_ore = createOre(0x7F7F7F, '#D7CCC8');
-      textures.coal_ore = createOre(0x7F7F7F, '#424242');
-      
-      textures.water = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        ctx.fillStyle = 'rgba(30, 60, 180, 0.6)';
-        ctx.fillRect(0, 0, w, h);
-        for (let i = 0; i < 6; i++)
-          ctx.fillStyle = 'rgba(255,255,255,0.3)',
-          ctx.fillRect(Math.floor(Math.random()*w), Math.floor(Math.random()*h), 1, 1);
-      });
-      
-      textures.lava = createCanvasTexture(TEX_SIZE, TEX_SIZE, (ctx, w, h) => {
-        fillTexture(ctx, w, h, 0xFF4500, 15);
-        ctx.fillStyle = '#FFAA00';
-        ctx.fillRect(2, 1, 2, 2);
-      });
-    }
-    
-    generateAllTextures();
-
-    // ========== ТИПЫ БЛОКОВ ==========
-    const BLOCK_TYPES = {
-      AIR: 0, GRASS: 1, DIRT: 2, STONE: 3, COBBLESTONE: 4,
-      SAND: 5, GRAVEL: 6, OAK_LOG: 7, OAK_LEAVES: 8,
-      BIRCH_LOG: 9, BIRCH_LEAVES: 10, PLANKS: 11, GLASS: 12,
-      BRICKS: 13, BOOKSHELF: 14, OBSIDIAN: 15, DIAMOND_ORE: 16,
-      GOLD_ORE: 17, IRON_ORE: 18, COAL_ORE: 19, WATER: 20, LAVA: 21
-    };
-
-    // ========== ИНСТРУМЕНТЫ ==========
-    const TOOLS = {
-      WOOD_PICK: 'wood_pick', STONE_PICK: 'stone_pick',
-      IRON_PICK: 'iron_pick', AXE: 'axe', SHOVEL: 'shovel'
-    };
-    
-    function getToolMultiplier(tool, blockType) {
-      const b = BLOCK_TYPES;
-      if (tool === TOOLS.SHOVEL && [b.DIRT, b.SAND, b.GRAVEL].includes(blockType)) return 6.0;
-      if (tool === TOOLS.AXE && [b.OAK_LOG, b.BIRCH_LOG, b.PLANKS].includes(blockType)) return 5.0;
-      if (tool === TOOLS.WOOD_PICK) {
-        if ([b.STONE, b.COBBLESTONE].includes(blockType)) return 1.5;
-        if ([b.DIRT, b.SAND].includes(blockType)) return 2.5;
-      }
-      if (tool === TOOLS.STONE_PICK) {
-        if ([b.STONE, b.COBBLESTONE, b.IRON_ORE, b.COAL_ORE].includes(blockType)) return 3.0;
-        if ([b.DIAMOND_ORE, b.GOLD_ORE].includes(blockType)) return 1.8;
-      }
-      if (tool === TOOLS.IRON_PICK) {
-        if ([b.STONE, b.COBBLESTONE, b.OBSIDIAN, b.DIAMOND_ORE, b.GOLD_ORE, b.IRON_ORE, b.COAL_ORE].includes(blockType)) return 5.0;
-      }
-      return 1.0;
-    }
-
-    // ========== ИНВЕНТАРЬ ==========
-    class Inventory {
-      constructor() {
-        this.slots = new Array(9).fill(null);
-        this.addItem(BLOCK_TYPES.DIRT, 20);
-        this.addItem(BLOCK_TYPES.STONE, 10);
-        this.addItem(BLOCK_TYPES.PLANKS, 15);
-        this.addItem(TOOLS.WOOD_PICK, 1);
-        this.addItem(TOOLS.STONE_PICK, 1);
-        this.addItem(TOOLS.AXE, 1);
-        this.addItem(TOOLS.SHOVEL, 1);
-        this.addItem(BLOCK_TYPES.GLASS, 8);
-        this.addItem(BLOCK_TYPES.OAK_LOG, 12);
-        this.activeSlot = 0;
-      }
-      addItem(type, count = 1) {
-        for (let i = 0; i < this.slots.length; i++) {
-          if (this.slots[i] && this.slots[i].type === type) {
-            this.slots[i].count += count;
-            return;
-          }
-        }
-        for (let i = 0; i < this.slots.length; i++) {
-          if (!this.slots[i]) {
-            this.slots[i] = { type, count };
-            return;
-          }
-        }
-      }
-      removeItem(slotIndex, count = 1) {
-        if (!this.slots[slotIndex]) return false;
-        this.slots[slotIndex].count -= count;
-        if (this.slots[slotIndex].count <= 0) this.slots[slotIndex] = null;
-        return true;
-      }
-      getActiveItem() {
-        return this.slots[this.activeSlot];
-      }
-    }
-
-    // ========== ИГРОК С ПОЛЕТОМ ==========
-    class Player {
-      constructor(camera, scene) {
-        this.camera = camera;
-        this.scene = scene;
-        this.velocity = new THREE.Vector3();
-        this.onGround = false;
-        this.height = 1.8;
-        this.speed = 5.5;
-        this.flySpeed = 8.0;
-        this.jumpPower = 6.5;
-        this.flyMode = false;
-        this.raycaster = new THREE.Raycaster();
-        this.raycaster.far = 2.0;
-      }
-      
-      toggleFly() {
-        this.flyMode = !this.flyMode;
-        this.velocity.y = 0;
-        document.getElementById('flight-mode').textContent = 
-          this.flyMode ? '✈️ Полет: ВКЛ' : '✈️ Полет: ВЫКЛ';
-        document.getElementById('flight-mode').style.color = this.flyMode ? '#0f0' : '#ff0';
-        document.getElementById('flight-mode').style.borderColor = this.flyMode ? '#0f0' : '#ff0';
-      }
-      
-      update(delta, world) {
-        const move = new THREE.Vector3();
-        if (keys.forward) move.z -= 1;
-        if (keys.backward) move.z += 1;
-        if (keys.left) move.x -= 1;
-        if (keys.right) move.x += 1;
-        
-        if (this.flyMode) {
-          if (keys.jump) move.y += 1;
-          if (keys.crouch) move.y -= 1;
-        }
-        
-        if (move.length() > 0) {
-          move.normalize();
-          if (!this.flyMode && this.onGround && Math.random() < 0.03) playSound('step');
-        }
-        
-        const currentSpeed = this.flyMode ? this.flySpeed : this.speed;
-        move.multiplyScalar(currentSpeed * delta);
-        
-        this.camera.position.x += move.x;
-        this.camera.position.z += move.z;
-        
-        if (this.flyMode) {
-          this.camera.position.y += move.y;
-          this.velocity.y = 0;
-        } else {
-          this.velocity.y -= 15 * delta;
-          this.camera.position.y += this.velocity.y * delta;
-          
-          this.onGround = false;
-          const pos = this.camera.position;
-          const footPos = pos.clone().add(new THREE.Vector3(0, -this.height, 0));
-          this.raycaster.set(footPos, new THREE.Vector3(0, -1, 0));
-          const hits = this.raycaster.intersectObjects(world.visibleBlocks);
-          if (hits.length > 0 && hits[0].distance < 0.3) {
-            this.camera.position.y = hits[0].point.y + this.height;
-            this.velocity.y = 0;
-            this.onGround = true;
-          }
-        }
-        
-        const pos = this.camera.position;
-        const checkCollision = (dir) => {
-          this.raycaster.set(pos, dir, 0.5);
-          return this.raycaster.intersectObjects(world.visibleBlocks).length > 0;
-        };
-        
-        if (checkCollision(new THREE.Vector3(1,0,0))) this.camera.position.x -= 0.15;
-        if (checkCollision(new THREE.Vector3(-1,0,0))) this.camera.position.x += 0.15;
-        if (checkCollision(new THREE.Vector3(0,0,1))) this.camera.position.z -= 0.15;
-        if (checkCollision(new THREE.Vector3(0,0,-1))) this.camera.position.z += 0.15;
-      }
-      
-      jump() {
-        if (this.flyMode) {
-          this.camera.position.y += 0.5;
-        } else if (this.onGround) {
-          this.velocity.y = this.jumpPower;
-          this.onGround = false;
-        }
-      }
-      
-      crouch() {
-        if (this.flyMode) {
-          this.camera.position.y -= 0.5;
-        }
-      }
-    }
-
-    // ========== МИР 10x10 ==========
-    class World {
-      constructor(scene) {
-        this.scene = scene;
-        this.group = new THREE.Group();
-        this.blocks = new Map();
-        this.visibleBlocks = [];
-        this.geometry = new THREE.BoxGeometry(0.98, 0.98, 0.98);
-        this.generate();
-        scene.add(this.group);
-      }
-      
-      getMaterialForBlock(type) {
-        let materials;
-        switch(type) {
-          case BLOCK_TYPES.GRASS:
-            materials = [
-              new THREE.MeshStandardMaterial({ map: textures.grass_side, roughness: 0.9 }),
-              new THREE.MeshStandardMaterial({ map: textures.grass_side, roughness: 0.9 }),
-              new THREE.MeshStandardMaterial({ map: textures.grass_top, roughness: 0.9 }),
-              new THREE.MeshStandardMaterial({ map: textures.dirt, roughness: 0.9 }),
-              new THREE.MeshStandardMaterial({ map: textures.grass_side, roughness: 0.9 }),
-              new THREE.MeshStandardMaterial({ map: textures.grass_side, roughness: 0.9 })
-            ];
-            break;
-          case BLOCK_TYPES.DIRT:
-            materials = new THREE.MeshStandardMaterial({ map: textures.dirt, roughness: 0.9 });
-            break;
-          case BLOCK_TYPES.STONE:
-            materials = new THREE.MeshStandardMaterial({ map: textures.stone, roughness: 0.7 });
-            break;
-          case BLOCK_TYPES.COBBLESTONE:
-            materials = new THREE.MeshStandardMaterial({ map: textures.cobblestone, roughness: 0.8 });
-            break;
-          case BLOCK_TYPES.SAND:
-            materials = new THREE.MeshStandardMaterial({ map: textures.sand, roughness: 0.95 });
-            break;
-          case BLOCK_TYPES.GRAVEL:
-            materials = new THREE.MeshStandardMaterial({ map: textures.gravel, roughness: 0.9 });
-            break;
-          case BLOCK_TYPES.OAK_LOG:
-            materials = [
-              new THREE.MeshStandardMaterial({ map: textures.oak_log, roughness: 0.85 }),
-              new THREE.MeshStandardMaterial({ map: textures.oak_log, roughness: 0.85 }),
-              new THREE.MeshStandardMaterial({ map: textures.oak_log_top, roughness: 0.85 }),
-              new THREE.MeshStandardMaterial({ map: textures.oak_log_top, roughness: 0.85 }),
-              new THREE.MeshStandardMaterial({ map: textures.oak_log, roughness: 0.85 }),
-              new THREE.MeshStandardMaterial({ map: textures.oak_log, roughness: 0.85 })
-            ];
-            break;
-          case BLOCK_TYPES.OAK_LEAVES:
-            materials = new THREE.MeshStandardMaterial({ map: textures.oak_leaves, roughness: 0.8, transparent: true });
-            break;
-          case BLOCK_TYPES.BIRCH_LOG:
-            materials = [
-              new THREE.MeshStandardMaterial({ map: textures.birch_log, roughness: 0.85 }),
-              new THREE.MeshStandardMaterial({ map: textures.birch_log, roughness: 0.85 }),
-              new THREE.MeshStandardMaterial({ map: textures.birch_log_top, roughness: 0.85 }),
-              new THREE.MeshStandardMaterial({ map: textures.birch_log_top, roughness: 0.85 }),
-              new THREE.MeshStandardMaterial({ map: textures.birch_log, roughness: 0.85 }),
-              new THREE.MeshStandardMaterial({ map: textures.birch_log, roughness: 0.85 })
-            ];
-            break;
-          case BLOCK_TYPES.BIRCH_LEAVES:
-            materials = new THREE.MeshStandardMaterial({ map: textures.birch_leaves, roughness: 0.8, transparent: true });
-            break;
-          case BLOCK_TYPES.PLANKS:
-            materials = new THREE.MeshStandardMaterial({ map: textures.planks, roughness: 0.8 });
-            break;
-          case BLOCK_TYPES.GLASS:
-            materials = new THREE.MeshStandardMaterial({ map: textures.glass, roughness: 0.1, transparent: true, opacity: 0.5 });
-            break;
-          case BLOCK_TYPES.BRICKS:
-            materials = new THREE.MeshStandardMaterial({ map: textures.bricks, roughness: 0.8 });
-            break;
-          case BLOCK_TYPES.BOOKSHELF:
-            materials = new THREE.MeshStandardMaterial({ map: textures.bookshelf, roughness: 0.7 });
-            break;
-          case BLOCK_TYPES.OBSIDIAN:
-            materials = new THREE.MeshStandardMaterial({ map: textures.obsidian, roughness: 0.3 });
-            break;
-          case BLOCK_TYPES.DIAMOND_ORE:
-            materials = new THREE.MeshStandardMaterial({ map: textures.diamond_ore, roughness: 0.6 });
-            break;
-          case BLOCK_TYPES.GOLD_ORE:
-            materials = new THREE.MeshStandardMaterial({ map: textures.gold_ore, roughness: 0.6 });
-            break;
-          case BLOCK_TYPES.IRON_ORE:
-            materials = new THREE.MeshStandardMaterial({ map: textures.iron_ore, roughness: 0.6 });
-            break;
-          case BLOCK_TYPES.COAL_ORE:
-            materials = new THREE.MeshStandardMaterial({ map: textures.coal_ore, roughness: 0.6 });
-            break;
-          case BLOCK_TYPES.WATER:
-            materials = new THREE.MeshStandardMaterial({ map: textures.water, roughness: 0.1, transparent: true, opacity: 0.6 });
-            break;
-          case BLOCK_TYPES.LAVA:
-            materials = new THREE.MeshStandardMaterial({ map: textures.lava, roughness: 0.2, emissive: 0xff4400, emissiveIntensity: 0.4 });
-            break;
-          default:
-            materials = new THREE.MeshStandardMaterial({ color: 0xff00ff, roughness: 0.5 });
-        }
-        return materials;
-      }
-      
-      setBlock(x, y, z, type) {
-        const key = `${x},${y},${z}`;
-        if (this.blocks.has(key)) {
-          const old = this.blocks.get(key);
-          this.group.remove(old);
-          const idx = this.visibleBlocks.indexOf(old);
-          if (idx > -1) this.visibleBlocks.splice(idx, 1);
-          this.blocks.delete(key);
-        }
-        if (type === BLOCK_TYPES.AIR) return;
-        
-        const mesh = new THREE.Mesh(this.geometry, this.getMaterialForBlock(type));
-        mesh.position.set(x, y, z);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        mesh.userData = { type, x, y, z };
-        
-        this.group.add(mesh);
-        this.blocks.set(key, mesh);
-        this.visibleBlocks.push(mesh);
-      }
-      
-      getBlock(x, y, z) {
-        return this.blocks.get(`${Math.round(x)},${Math.round(y)},${Math.round(z)}`);
-      }
-      
-      removeBlock(x, y, z) {
-        this.setBlock(x, y, z, BLOCK_TYPES.AIR);
-      }
-      
-      generate() {
-        const halfSize = Math.floor(WORLD_SIZE / 2);
-        
-        // Генерируем мир 10x10
-        for (let x = -halfSize; x < halfSize; x++) {
-          for (let z = -halfSize; z < halfSize; z++) {
-            // Высота от 3 до 8 блоков
-            const height = Math.floor(
-              Math.sin(x * 0.5) * 1.5 + 
-              Math.cos(z * 0.5) * 1.5 + 
-              5
-            );
-            
-            for (let y = 0; y < height; y++) {
-              let type;
-              if (y === height - 1) type = BLOCK_TYPES.GRASS;
-              else if (y > height - 4) type = BLOCK_TYPES.DIRT;
-              else type = BLOCK_TYPES.STONE;
-              
-              // Песок по краям
-              if ((Math.abs(x) >= halfSize - 1 || Math.abs(z) >= halfSize - 1) && y === height - 1) {
-                type = BLOCK_TYPES.SAND;
-              }
-              
-              this.setBlock(x, y, z, type);
-            }
-            
-            // Вода в центре (маленькое озеро)
-            if (Math.abs(x) <= 1 && Math.abs(z) <= 1 && height < 5) {
-              for (let y = height; y < 5; y++) {
-                this.setBlock(x, y, z, BLOCK_TYPES.WATER);
-              }
-            }
-          }
-        }
-        
-        // Руды (5 штук для маленького мира)
-        for (let i = 0; i < 5; i++) {
-          const rx = Math.floor(Math.random() * WORLD_SIZE) - halfSize;
-          const rz = Math.floor(Math.random() * WORLD_SIZE) - halfSize;
-          const ry = Math.floor(Math.random() * 3) + 1;
-          const ores = [BLOCK_TYPES.COAL_ORE, BLOCK_TYPES.IRON_ORE, BLOCK_TYPES.GOLD_ORE, BLOCK_TYPES.DIAMOND_ORE];
-          this.setBlock(rx, ry, rz, ores[Math.floor(Math.random() * ores.length)]);
-        }
-        
-        // 2 дерева
-        const treePositions = [
-          { x: -2, z: -2 },
-          { x: 2, z: 2 }
-        ];
-        
-        treePositions.forEach(pos => {
-          const baseHeight = Math.floor(
-            Math.sin(pos.x * 0.5) * 1.5 + Math.cos(pos.z * 0.5) * 1.5 + 5
-          );
-          
-          if (baseHeight >= 5) {
-            for (let h = 0; h < 3; h++) {
-              this.setBlock(pos.x, baseHeight + h, pos.z, BLOCK_TYPES.OAK_LOG);
-            }
-            // Листва
-            for (let dx = -1; dx <= 1; dx++) {
-              for (let dz = -1; dz <= 1; dz++) {
-                this.setBlock(pos.x + dx, baseHeight + 2, pos.z + dz, BLOCK_TYPES.OAK_LEAVES);
-                this.setBlock(pos.x + dx, baseHeight + 3, pos.z + dz, BLOCK_TYPES.OAK_LEAVES);
-              }
-            }
-            this.setBlock(pos.x, baseHeight + 4, pos.z, BLOCK_TYPES.OAK_LEAVES);
-          }
-        });
-        
-        // Бортики из камня по периметру
-        for (let x = -halfSize; x < halfSize; x++) {
-          this.setBlock(x, 0, -halfSize, BLOCK_TYPES.STONE);
-          this.setBlock(x, 0, halfSize - 1, BLOCK_TYPES.STONE);
-        }
-        for (let z = -halfSize; z < halfSize; z++) {
-          this.setBlock(-halfSize, 0, z, BLOCK_TYPES.STONE);
-          this.setBlock(halfSize - 1, 0, z, BLOCK_TYPES.STONE);
-        }
-      }
-    }
-
-    // ========== ИНИЦИАЛИЗАЦИЯ ==========
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87CEEB);
-    scene.fog = new THREE.Fog(0x87CEEB, 15, 30);
-    
-    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 50);
-    camera.position.set(0, 10, 10);
-    
-    const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    document.body.appendChild(renderer.domElement);
-    
-    const controls = new PointerLockControls(camera, renderer.domElement);
-    scene.add(controls.getObject());
-    
-    const sun = new THREE.DirectionalLight(0xffffff, 1.0);
-    sun.position.set(20, 30, 15);
-    sun.castShadow = true;
-    sun.shadow.mapSize.width = 256;
-    sun.shadow.mapSize.height = 256;
-    sun.shadow.camera.far = 40;
-    scene.add(sun);
-    scene.add(new THREE.AmbientLight(0x404066));
-    
-    const world = new World(scene);
-    const player = new Player(camera, scene);
-    const inventory = new Inventory();
-    
-    // Нет NPC для максимальной производительности
-    
-    const highlightRaycaster = new THREE.Raycaster();
-    highlightRaycaster.far = 5;
-    let highlightedBlock = null;
-    const outlineMesh = new THREE.LineSegments(
-      new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)),
-      new THREE.LineBasicMaterial({ color: 0x000000 })
+  // draw a rectangle sprite
+  if (this.shape === 'rect') {
+    // by using a size less than the grid we can ensure there is a visual space
+    // between each row
+    context.fillRect(this.x, this.y + gridGap / 2, this.size, grid - gridGap);
+  }
+  // draw a circle sprite. since size is the diameter we need to divide by 2
+  // to get the radius. also the x/y position needs to be centered instead of
+  // the top-left corner of the sprite
+  else {
+    context.beginPath();
+    context.arc(
+      this.x + this.size / 2, this.y + this.size / 2,
+      this.size / 2 - gridGap / 2, 0, 2 * Math.PI
     );
-    scene.add(outlineMesh);
-    outlineMesh.visible = false;
-    
-    // UI
-    function updateHotbarUI() {
-      const hotbar = document.getElementById('hotbar');
-      hotbar.innerHTML = '';
-      inventory.slots.forEach((item, idx) => {
-        const slot = document.createElement('div');
-        slot.className = 'slot' + (idx === inventory.activeSlot ? ' active' : '');
-        if (item) {
-          let display = '';
-          if (typeof item.type === 'string') {
-            display = item.type.replace('_', ' ').substring(0, 8);
-          } else {
-            const key = Object.keys(BLOCK_TYPES).find(k => BLOCK_TYPES[k] === item.type);
-            display = key ? key.substring(0, 8) : '?';
+    context.fill();
+  }
+}
+
+const frogger = new Sprite({
+  x: grid * 6,
+  y: grid * 13,
+  color: 'greenyellow',
+  size: grid,
+  shape: 'circle'
+});
+const scoredFroggers = [];
+
+// a pattern describes each obstacle in the row
+const patterns = [
+  // end bank is safe
+  null,
+
+  // log
+  {
+    spacing: [2],      // how many grid spaces between each obstacle
+    color: '#c55843',  // color of the obstacle
+    size: grid * 4,    // width (rect) / diameter (circle) of the obstacle
+    shape: 'rect',     // shape of the obstacle (rect or circle)
+    speed: 0.75        // how fast the obstacle moves and which direction
+  },
+
+  // turtle
+  {
+    spacing: [0,2,0,2,0,2,0,4],
+    color: '#de0004',
+    size: grid,
+    shape: 'circle',
+    speed: -1
+  },
+
+  // long log
+  {
+    spacing: [2],
+    color: '#c55843',
+    size: grid * 7,
+    shape: 'rect',
+    speed: 1.5
+  },
+
+  // log
+  {
+    spacing: [3],
+    color: '#c55843',
+    size: grid * 3,
+    shape: 'rect',
+    speed: 0.5
+  },
+
+  // turtle
+  {
+    spacing: [0,0,1],
+    color: '#de0004',
+    size: grid,
+    shape: 'circle',
+    speed: -1
+  },
+
+  // beach is safe
+  null,
+
+  // truck
+  {
+    spacing: [3,8],
+    color: '#c2c4da',
+    size: grid * 2,
+    shape: 'rect',
+    speed: -1
+  },
+
+  // fast car
+  {
+    spacing: [14],
+    color: '#c2c4da',
+    size: grid,
+    shape: 'rect',
+    speed: 0.75
+  },
+
+  // car
+  {
+    spacing: [3,3,7],
+    color: '#de3cdd',
+    size: grid,
+    shape: 'rect',
+    speed: -0.75
+  },
+
+  // bulldozer
+  {
+    spacing: [3,3,7],
+    color: '#0bcb00',
+    size: grid,
+    shape: 'rect',
+    speed: 0.5
+  },
+
+  // car
+  {
+    spacing: [4],
+    color: '#e5e401',
+    size: grid,
+    shape: 'rect',
+    speed: -0.5
+  },
+
+  // start zone is safe
+  null
+];
+
+// rows holds all the sprites for that row
+const rows = [];
+for (let i = 0; i < patterns.length; i++) {
+  rows[i] = [];
+
+  let x = 0;
+  let index = 0;
+  const pattern = patterns[i];
+
+  // skip empty patterns (safe zones)
+  if (!pattern) {
+    continue;
+  }
+
+  // allow there to be 1 extra pattern offscreen so the loop is seamless
+  // (especially for the long log)
+  let totalPatternWidth =
+    pattern.spacing.reduce((acc, space) => acc + space, 0) * grid +
+    pattern.spacing.length * pattern.size;
+  let endX = 0;
+  while (endX < canvas.width) {
+    endX += totalPatternWidth;
+  }
+  endX += totalPatternWidth;
+
+  // populate the row with sprites
+  while (x < endX) {
+    rows[i].push(new Sprite({
+      x,
+      y: grid * (i + 1),
+      index,
+      ...pattern
+    }));
+
+    // move the next sprite over according to the spacing
+    const spacing = pattern.spacing;
+    x += pattern.size + spacing[index] * grid;
+    index = (index + 1) % spacing.length;
+  }
+}
+
+// game loop
+function loop() {
+  requestAnimationFrame(loop);
+  context.clearRect(0,0,canvas.width,canvas.height);
+
+  // draw the game background
+  // water
+  context.fillStyle = '#000047';
+  context.fillRect(0, grid, canvas.width, grid * 6);
+
+  // end bank
+  context.fillStyle = '#1ac300';
+  context.fillRect(0, grid, canvas.width, 5);
+  context.fillRect(0, grid, 5, grid);
+  context.fillRect(canvas.width - 5, grid, 5, grid);
+  for (let i = 0; i < 4; i++) {
+    context.fillRect(grid + grid * 3 * i, grid, grid * 2, grid);
+  }
+
+  // beach
+  context.fillStyle = '#8500da';
+  context.fillRect(0, 7 * grid, canvas.width, grid);
+
+  // start zone
+  context.fillRect(0, canvas.height - grid * 2, canvas.width, grid);
+
+  // update and draw obstacles
+  for (let r = 0; r < rows.length; r++) {
+    const row = rows[r];
+
+    for (let i = 0; i < row.length; i++) {
+      const sprite = row[i]
+      sprite.x += sprite.speed;
+      sprite.render();
+
+      // loop sprite around the screen
+      // sprite is moving to the left and goes offscreen
+      if (sprite.speed < 0 && sprite.x < 0 - sprite.size) {
+
+        // find the rightmost sprite
+        let rightMostSprite = sprite;
+        for (let j = 0; j < row.length; j++) {
+          if (row[j].x > rightMostSprite.x) {
+            rightMostSprite = row[j];
           }
-          slot.innerHTML = `<span>${display}</span><span class="count">${item.count}</span>`;
         }
-        slot.addEventListener('click', () => { inventory.activeSlot = idx; updateHotbarUI(); });
-        hotbar.appendChild(slot);
-      });
-    }
-    updateHotbarUI();
-    
-    const keys = { forward: false, backward: false, left: false, right: false, jump: false, crouch: false };
-    document.addEventListener('keydown', (e) => {
-      if (!controls.isLocked) return;
-      switch(e.code) {
-        case 'KeyW': keys.forward = true; break;
-        case 'KeyS': keys.backward = true; break;
-        case 'KeyA': keys.left = true; break;
-        case 'KeyD': keys.right = true; break;
-        case 'Space': keys.jump = true; player.jump(); break;
-        case 'ShiftLeft': case 'ShiftRight': keys.crouch = true; player.crouch(); break;
-        case 'KeyF': player.toggleFly(); break;
-        case 'Digit1': case 'Digit2': case 'Digit3': case 'Digit4': case 'Digit5':
-        case 'Digit6': case 'Digit7': case 'Digit8': case 'Digit9':
-          inventory.activeSlot = parseInt(e.code.replace('Digit', '')) - 1;
-          updateHotbarUI();
-          break;
+
+        // move the sprite to the next spot in the pattern so it continues
+        const spacing = patterns[r].spacing;
+        sprite.x =
+          rightMostSprite.x + rightMostSprite.size +
+          spacing[rightMostSprite.index] * grid;
+        sprite.index = (rightMostSprite.index + 1) % spacing.length;
       }
-    });
-    document.addEventListener('keyup', (e) => {
-      switch(e.code) {
-        case 'KeyW': keys.forward = false; break;
-        case 'KeyS': keys.backward = false; break;
-        case 'KeyA': keys.left = false; break;
-        case 'KeyD': keys.right = false; break;
-        case 'Space': keys.jump = false; break;
-        case 'ShiftLeft': case 'ShiftRight': keys.crouch = false; break;
-      }
-    });
-    
-    renderer.domElement.addEventListener('click', () => {
-      initAudio();
-      controls.lock();
-    });
-    
-    let destroyProgress = 0;
-    let currentTarget = null;
-    
-    function updateBlockInteraction() {
-      if (!controls.isLocked) return;
-      highlightRaycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-      const hits = highlightRaycaster.intersectObjects(world.visibleBlocks);
-      if (hits.length > 0 && hits[0].distance < 5) {
-        outlineMesh.position.copy(hits[0].object.position);
-        outlineMesh.visible = true;
-        highlightedBlock = hits[0].object;
-      } else {
-        outlineMesh.visible = false;
-        highlightedBlock = null;
-        currentTarget = null;
-        destroyProgress = 0;
-      }
-    }
-    
-    function mineBlock() {
-      if (!highlightedBlock) return;
-      if (currentTarget !== highlightedBlock) { destroyProgress = 0; currentTarget = highlightedBlock; }
-      const tool = inventory.getActiveItem()?.type;
-      const mult = getToolMultiplier(tool, currentTarget.userData.type);
-      destroyProgress += 0.025 * mult;
-      if (destroyProgress >= 1.0) {
-        const type = currentTarget.userData.type;
-        const pos = currentTarget.position;
-        world.removeBlock(pos.x, pos.y, pos.z);
-        inventory.addItem(type, 1);
-        updateHotbarUI();
-        playSound('break');
-        destroyProgress = 0;
-        currentTarget = null;
-        outlineMesh.visible = false;
-      }
-    }
-    
-    function placeBlock() {
-      if (!highlightedBlock) return;
-      const active = inventory.getActiveItem();
-      if (!active || typeof active.type === 'string') return;
-      highlightRaycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-      const hits = highlightRaycaster.intersectObjects(world.visibleBlocks);
-      if (hits.length > 0) {
-        const normal = hits[0].face.normal.clone();
-        const placePos = new THREE.Vector3(
-          Math.round(hits[0].point.x + normal.x * 0.5),
-          Math.round(hits[0].point.y + normal.y * 0.5),
-          Math.round(hits[0].point.z + normal.z * 0.5)
-        );
-        if (!world.getBlock(placePos.x, placePos.y, placePos.z)) {
-          world.setBlock(placePos.x, placePos.y, placePos.z, active.type);
-          inventory.removeItem(inventory.activeSlot, 1);
-          updateHotbarUI();
-          playSound('place');
+
+      // sprite is moving to the right and goes offscreen
+      if (sprite.speed > 0 && sprite.x > canvas.width) {
+
+        // find the leftmost sprite
+        let leftMostSprite = sprite;
+        for (let j = 0; j < row.length; j++) {
+          if (row[j].x < leftMostSprite.x) {
+            leftMostSprite = row[j];
+          }
         }
+
+        // move the sprite to the next spot in the pattern so it continues
+        const spacing = patterns[r].spacing;
+        let index = leftMostSprite.index - 1;
+        index = index >= 0 ? index : spacing.length - 1;
+        sprite.x = leftMostSprite.x - spacing[index] * grid - sprite.size;
+        sprite.index = index;
       }
     }
-    
-    let mouseDown = false;
-    window.addEventListener('mousedown', (e) => {
-      if (!controls.isLocked) return;
-      mouseDown = true;
-      if (e.button === 0) mineBlock();
-      if (e.button === 2) placeBlock();
-    });
-    window.addEventListener('mouseup', () => { mouseDown = false; });
-    window.addEventListener('contextmenu', e => e.preventDefault());
-    window.addEventListener('wheel', (e) => {
-      if (!controls.isLocked) return;
-      inventory.activeSlot = e.deltaY > 0 ? (inventory.activeSlot + 1) % 9 : (inventory.activeSlot + 8) % 9;
-      updateHotbarUI();
-    });
-    
-    // FPS
-    let frameCount = 0, lastFpsTime = performance.now(), currentFPS = 60;
-    const fpsElement = document.getElementById('fps-counter');
-    let lastFrameTime = performance.now();
-    
-    function gameLoop(currentTime) {
-      requestAnimationFrame(gameLoop);
-      const elapsed = currentTime - lastFrameTime;
-      if (elapsed < FRAME_TIME) return;
-      const delta = Math.min(elapsed / 1000, 0.05);
-      lastFrameTime = currentTime - (elapsed % FRAME_TIME);
-      
-      frameCount++;
-      if (currentTime - lastFpsTime >= 1000) {
-        currentFPS = Math.round(frameCount * 1000 / (currentTime - lastFpsTime));
-        fpsElement.textContent = `FPS: ${currentFPS}`;
-        frameCount = 0;
-        lastFpsTime = currentTime;
+  }
+
+  // draw frogger
+  frogger.x += frogger.speed || 0;
+  frogger.render();
+
+  // draw scored froggers
+  scoredFroggers.forEach(frog => frog.render());
+
+  // check for collision with all sprites in the same row as frogger
+  const froggerRow = frogger.y / grid - 1 | 0;
+  let collision = false;
+  for (let i = 0; i < rows[froggerRow].length; i++) {
+    let sprite = rows[froggerRow][i];
+
+    // axis-aligned bounding box (AABB) collision check
+    // treat any circles as rectangles for the purposes of collision
+    if (frogger.x < sprite.x + sprite.size - gridGap &&
+        frogger.x + grid - gridGap > sprite.x &&
+        frogger.y < sprite.y + grid &&
+        frogger.y + grid > sprite.y) {
+      collision = true;
+
+      // reset frogger if got hit by car
+      if (froggerRow > rows.length / 2) {
+        frogger.x = grid * 6;
+        frogger.y = grid * 13;
       }
-      
-      player.update(delta, world);
-      updateBlockInteraction();
-      if (controls.isLocked && currentTarget && mouseDown) mineBlock();
-      renderer.render(scene, camera);
+      // move frogger along with obstacle
+      else {
+        frogger.speed = sprite.speed;
+      }
     }
-    
-    requestAnimationFrame(gameLoop);
-    
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-    
-    console.log('🎮 Мир 10×10 готов! F - полет, Пробел - вверх, Shift - вниз');
-    console.log('📊 Блоков в мире: ~500-600 штук');
-  </script>
+  }
+
+  if (!collision) {
+    // if fogger isn't colliding reset speed
+    frogger.speed = 0;
+
+    // frogger got to end bank (goal every 3 cols)
+    const col = (frogger.x + grid / 2) / grid | 0;
+    if (froggerRow === 0 && col % 3 === 0 &&
+        // check to see if there isn't a scored frog already there
+        !scoredFroggers.find(frog => frog.x === col * grid)) {
+      scoredFroggers.push(new Sprite({
+        ...frogger,
+        x: col * grid,
+        y: frogger.y + 5
+      }));
+    }
+
+    // reset frogger if not on obstacle in river
+    if (froggerRow < rows.length / 2 - 1) {
+      frogger.x = grid * 6;
+      frogger.y = grid * 13;
+    }
+  }
+}
+
+// listen to keyboard events to move frogger
+document.addEventListener('keydown', function(e) {
+  // left arrow key
+  if (e.which === 37) {
+    frogger.x -= grid;
+  }
+  // right arrow key
+  else if (e.which === 39) {
+    frogger.x += grid;
+  }
+
+  // up arrow key
+  else if (e.which === 38) {
+    frogger.y -= grid;
+  }
+  // down arrow key
+  else if (e.which === 40) {
+    frogger.y += grid;
+  }
+
+  // clamp frogger position to stay on screen
+  frogger.x = Math.min( Math.max(0, frogger.x), canvas.width - grid);
+  frogger.y = Math.min( Math.max(grid, frogger.y), canvas.height - grid * 2);
+});
+
+// start the game
+requestAnimationFrame(loop);
+</script>
 </body>
 </html>
