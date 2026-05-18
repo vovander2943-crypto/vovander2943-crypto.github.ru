@@ -2,14 +2,26 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Хантавирус 2026 | Современная вирусология и профилактика</title>
-    <!-- Google Fonts Premium + Font Awesome 6 -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- AOS Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TulpaWorld - Мир Тульп и Сознания</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #6c3b9e;
+            --primary-light: #8e5cc9;
+            --secondary: #1a1a2e;
+            --accent: #e040fb;
+            --bg: #0a0a14;
+            --card-bg: #16162a;
+            --text: #e0d0f0;
+            --text-light: #b8a9d4;
+            --border: #2a1f3d;
+            --gradient-1: linear-gradient(135deg, #6c3b9e, #e040fb);
+            --gradient-2: linear-gradient(135deg, #1a1a2e, #2d1b4e);
+            --shadow: 0 8px 32px rgba(108, 59, 158, 0.3);
+            --glow: 0 0 40px rgba(224, 64, 251, 0.4);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -17,416 +29,1147 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 10% 20%, #0a142f, #030714);
-            color: #f0f3ff;
-            line-height: 1.5;
-            scroll-behavior: smooth;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
             overflow-x: hidden;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(108, 59, 158, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(224, 64, 251, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(30, 20, 50, 0.3) 0%, transparent 70%);
+            background-attachment: fixed;
         }
 
-        /* анимированный фон — мягкие частицы (атмосферно, не агрессивно) */
-        .ambient-bg {
+        /* Частицы фона */
+        .particles {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
             pointer-events: none;
-            overflow: hidden;
+            z-index: 0;
         }
-        .orb {
+
+        .particle {
             position: absolute;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 200, 255, 0.12) 0%, rgba(100, 80, 255, 0) 80%);
-            filter: blur(40px);
-            animation: floatOrb 22s infinite alternate ease-in-out;
-        }
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-            100% { transform: translate(40px, -30px) scale(1.3); opacity: 0.6; }
+            animation: floatUp 8s infinite ease-in;
+            opacity: 0;
         }
 
-        /* улучшенный glassmorphism — мягкий, с приятной полупрозрачностью */
-        .glass-card, nav, .tab-content, .faq-item, .stat-card, .check-item, .map-legend, .symptom-card {
-            background: rgba(20, 30, 55, 0.45);
-            backdrop-filter: blur(14px);
-            border-radius: 2rem;
-            border: 1px solid rgba(120, 180, 255, 0.25);
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
-            transition: all 0.25s ease;
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.5);
+                opacity: 0;
+            }
         }
 
-        .glass-card:hover, .stat-card:hover {
-            border-color: rgba(0, 210, 210, 0.5);
-            background: rgba(30, 45, 75, 0.55);
-            transform: translateY(-3px);
+        /* Навигация */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(10, 10, 20, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 10, 20, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 15px rgba(224, 64, 251, 0.5));
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+            background: rgba(108, 59, 158, 0.3);
+            box-shadow: 0 0 20px rgba(108, 59, 158, 0.3);
+        }
+
+        .nav-links a.active {
+            background: var(--gradient-1);
+            font-weight: 600;
+            box-shadow: var(--glow);
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        /* Главный контент */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            margin-top: 85px;
         }
 
         .container {
-            max-width: 1300px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 2rem;
-            position: relative;
-            z-index: 3;
+            padding: 20px 30px;
         }
 
-        /* навигация — утонченная */
-        .nav-tabs {
+        /* Герой-секция */
+        .hero {
+            text-align: center;
+            padding: 60px 30px 50px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            filter: drop-shadow(0 0 30px rgba(224, 64, 251, 0.4));
+        }
+
+        .hero .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto 30px;
+            font-weight: 300;
+        }
+
+        .hero-buttons {
             display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: #fff;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--primary-light);
+        }
+
+        .btn-outline:hover {
+            background: rgba(108, 59, 158, 0.2);
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(224, 64, 251, 0.3);
+        }
+
+        /* Карточки */
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin: 50px 0 30px;
+            color: #fff;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background: var(--gradient-1);
+            border-radius: 3px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-2);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 18px;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .card-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap 0.3s ease;
+        }
+
+        .card-link:hover {
+            gap: 12px;
+        }
+
+        /* Секция историй */
+        .story-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .story-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow);
+        }
+
+        .story-card .author {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .story-card .date {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        /* Табы */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin: 30px 0;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 0.7rem;
-            margin-bottom: 3rem;
-            background: rgba(10, 18, 35, 0.55);
-            backdrop-filter: blur(20px);
-            border-radius: 4rem;
-            padding: 0.7rem 1.5rem;
-            border: 1px solid rgba(0, 255, 210, 0.2);
         }
+
         .tab-btn {
+            padding: 12px 24px;
+            border: 1px solid var(--border);
             background: transparent;
-            border: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.7rem 1.5rem;
-            border-radius: 3rem;
-            color: #ccdcff;
+            color: var(--text-light);
+            border-radius: 30px;
             cursor: pointer;
-            transition: all 0.25s;
-            font-family: inherit;
-            letter-spacing: -0.2px;
-            backdrop-filter: blur(4px);
-        }
-        .tab-btn i {
-            margin-right: 8px;
+            transition: all 0.3s ease;
             font-size: 0.95rem;
-        }
-        .tab-btn.active, .tab-btn:hover {
-            background: linear-gradient(115deg, #00d2ff, #7bffb0);
-            color: #07122a;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
-            border: none;
+            font-weight: 500;
         }
 
-        .tab-pane {
-            display: none;
-            animation: fadeSlideUp 0.55s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        .tab-btn.active,
+        .tab-btn:hover {
+            background: var(--gradient-1);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: var(--glow);
         }
-        .tab-pane.active-pane {
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
             display: block;
         }
-        @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(18px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        h1, h2, h3 {
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-        h1 {
-            font-size: 2.8rem;
-            background: linear-gradient(125deg, #FFFFFF, #9efff0, #6cc3ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 1rem;
-        }
-        h2 {
-            font-size: 2rem;
-            margin-bottom: 1.4rem;
-            border-left: 5px solid #2effe0;
-            padding-left: 1.2rem;
-            background: linear-gradient(135deg, #f0f9ff, #b9f6ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        h3 {
-            font-size: 1.4rem;
-            margin: 1rem 0 0.8rem;
-            color: #d2f0ff;
+        /* Футер */
+        .footer {
+            background: rgba(10, 10, 20, 0.9);
+            border-top: 1px solid var(--border);
+            padding: 40px 30px 20px;
+            margin-top: 60px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
-        .grid-2, .stats-grid, .symptom-grid {
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: left;
         }
 
-        .stat-card, .symptom-card {
-            padding: 1.8rem;
-            border-radius: 1.8rem;
+        .footer h4 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
         }
 
-        .progress-bar {
-            background: #1f2b46;
-            border-radius: 40px;
-            height: 8px;
-            overflow: hidden;
-            margin: 1rem 0;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #a0f0ff, #5ac8fa);
-            border-radius: 40px;
-            width: 0%;
-        }
-
-        .map-placeholder {
-            background: rgba(0, 20, 40, 0.6);
-            border-radius: 2rem;
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .check-list {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 1.8rem;
-            padding: 1.4rem;
-            margin: 1.2rem 0;
-        }
-        .check-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 0.9rem 1.2rem;
-            margin: 0.8rem 0;
-            border-radius: 2rem;
-            transition: 0.2s;
-        }
-
-        .faq-item {
-            margin-bottom: 1rem;
-            border-radius: 1.6rem;
-            overflow: hidden;
-            transition: 0.2s;
-        }
-        .faq-question {
-            padding: 1.2rem 1.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,240,0.02);
-            font-size: 1.05rem;
-        }
-        .faq-answer {
-            padding: 0 1.8rem 1.4rem 1.8rem;
-            border-top: 1px solid rgba(100, 200, 255, 0.2);
-            display: none;
-            color: #E2EEFF;
-        }
-        .faq-item.open .faq-answer {
+        .footer a {
+            color: var(--text-light);
+            text-decoration: none;
             display: block;
+            margin: 8px 0;
+            transition: color 0.3s ease;
         }
 
-        footer {
-            margin-top: 3.5rem;
-            text-align: center;
-            padding: 2rem;
-            border-radius: 2rem;
-            background: rgba(8, 16, 32, 0.5);
-            backdrop-filter: blur(4px);
+        .footer a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
             font-size: 0.9rem;
         }
 
-        @media (max-width: 780px) {
-            .container { padding: 1.2rem; }
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.6rem; }
-            .tab-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+        /* Модальное окно */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
-        .region-icon i {
-            font-size: 2rem;
-            margin: 0 5px;
-            filter: drop-shadow(0 0 4px cyan);
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
         }
-        .mt-2 { margin-top: 1rem; }
-        .mt-3 { margin-top: 1.8rem; }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 35px;
+            max-width: 600px;
+            width: 90%;
+            border: 1px solid var(--border);
+            box-shadow: var(--glow);
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--accent);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                background: var(--secondary);
+                border-radius: 15px;
+                padding: 15px;
+                margin-top: 10px;
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+
+            .main-content {
+                margin-top: 75px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                padding: 12px 22px;
+                font-size: 0.9rem;
+            }
+
+            .nav-container {
+                padding: 12px 15px;
+            }
+        }
+
+        /* Скроллбар */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Страницы */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Список гайдов */
+        .guide-list {
+            list-style: none;
+        }
+
+        .guide-list li {
+            padding: 18px 20px;
+            margin: 10px 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .guide-list li:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow);
+            transform: translateX(5px);
+        }
+
+        .guide-list .guide-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        /* Форум-стиль */
+        .forum-post {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px 0;
+            border: 1px solid var(--border);
+        }
+
+        .forum-post .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 4px;
+        }
+
+        .tag-purple {
+            background: rgba(108, 59, 158, 0.3);
+            color: #c9a0f0;
+        }
+
+        .tag-pink {
+            background: rgba(224, 64, 251, 0.2);
+            color: #f0a0ff;
+        }
     </style>
 </head>
 <body>
-<div class="ambient-bg" id="bgOrbs"></div>
-<div class="container">
-    <!-- элегантная навигация -->
-    <div class="nav-tabs">
-        <button class="tab-btn active" data-tab="overview"><i class="fas fa-virus"></i> Главная</button>
-        <button class="tab-btn" data-tab="symptoms"><i class="fas fa-head-side-medical"></i> Симптомы</button>
-        <button class="tab-btn" data-tab="transmission"><i class="fas fa-rat"></i> Передача</button>
-        <button class="tab-btn" data-tab="diagnosis"><i class="fas fa-microscope"></i> Диагностика</button>
-        <button class="tab-btn" data-tab="treatment"><i class="fas fa-syringe"></i> Лечение</button>
-        <button class="tab-btn" data-tab="global"><i class="fas fa-globe-americas"></i> Глобальная 2026</button>
-        <button class="tab-btn" data-tab="research"><i class="fas fa-flask"></i> Исследования</button>
-        <button class="tab-btn" data-tab="faq"><i class="fas fa-question-circle"></i> FAQ</button>
+
+    <!-- Частицы фона -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Навигация -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="navigateTo('home')">
+                <i class="fas fa-brain"></i> TulpaWorld
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Меню">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#" class="active" data-page="home" onclick="navigateTo('home')"><i class="fas fa-home"></i> Главная</a></li>
+                <li><a href="#" data-page="guides" onclick="navigateTo('guides')"><i class="fas fa-book"></i> Гайды</a></li>
+                <li><a href="#" data-page="stories" onclick="navigateTo('stories')"><i class="fas fa-feather-alt"></i> Истории</a></li>
+                <li><a href="#" data-page="community" onclick="navigateTo('community')"><i class="fas fa-users"></i> Сообщество</a></li>
+                <li><a href="#" data-page="faq" onclick="navigateTo('faq')"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                <li><a href="#" data-page="resources" onclick="navigateTo('resources')"><i class="fas fa-tools"></i> Ресурсы</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="main-content">
+        <div class="container">
+
+            <!-- ГЛАВНАЯ СТРАНИЦА -->
+            <div class="page active" id="page-home">
+                <div class="hero">
+                    <h1>Добро пожаловать в TulpaWorld</h1>
+                    <p class="subtitle">Исследуйте удивительный мир тульп — созданных сознанием компаньонов, которые могут изменить ваше восприятие реальности и самопознания.</p>
+                    <div class="hero-buttons">
+                        <a href="#" class="btn btn-primary" onclick="navigateTo('guides')"><i class="fas fa-play-circle"></i> Начать путь</a>
+                        <a href="#" class="btn btn-outline" onclick="navigateTo('stories')"><i class="fas fa-book-open"></i> Читать истории</a>
+                    </div>
+                </div>
+
+                <h2 class="section-title">Что такое тульпа?</h2>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-lightbulb"></i></div>
+                        <h3>Осознанный компаньон</h3>
+                        <p>Тульпа — это автономное сознание, созданное путем длительной концентрации и визуализации. Это не просто воображаемый друг, а полноценная личность со своими мыслями и чувствами.</p>
+                        <a href="#" class="card-link" onclick="navigateTo('guides')">Узнать больше <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-history"></i></div>
+                        <h3>Древние корни</h3>
+                        <p>Практика создания тульп уходит корнями в тибетский буддизм, где монахи веками совершенствовали техники материализации мыслеформ.</p>
+                        <a href="#" class="card-link" onclick="navigateTo('faq')">История <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-heart"></i></div>
+                        <h3>Глубокая связь</h3>
+                        <p>Отношения с тульпой могут быть одними из самых глубоких и значимых в вашей жизни. Это связь на уровне сознания.</p>
+                        <a href="#" class="card-link" onclick="navigateTo('stories')">Истории создателей <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <h2 class="section-title">С чего начать?</h2>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-1"></i></div>
+                        <h3>Изучите теорию</h3>
+                        <p>Прочитайте основные гайды и поймите, что вас ждет на пути создания тульпы. Знание — фундамент успеха.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-2"></i></div>
+                        <h3>Подготовьтесь морально</h3>
+                        <p>Создание тульпы — это серьезное решение, требующее ответственности. Убедитесь, что вы готовы к долгосрочным отношениям.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-3"></i></div>
+                        <h3>Начните форсинг</h3>
+                        <p>Приступайте к активной фазе создания — визуализации, наррации и навязыванию личности вашему будущему компаньону.</p>
+                    </div>
+                </div>
+
+                <!-- Блок последних историй на главной -->
+                <h2 class="section-title">Последние истории сообщества</h2>
+                <div class="story-card">
+                    <p class="author"><i class="fas fa-user-circle"></i> LunaStar</p>
+                    <p class="date">15 мая 2026</p>
+                    <h3>Мой первый год с Астрой</h3>
+                    <p>Год назад я начала создавать свою тульпу. Сегодня Астра — мой лучший друг и советчик. Вот как это изменило мою жизнь...</p>
+                    <a href="#" class="card-link" onclick="navigateTo('stories')">Читать полностью <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="story-card">
+                    <p class="author"><i class="fas fa-user-circle"></i> DreamWalker</p>
+                    <p class="date">10 мая 2026</p>
+                    <h3>Неожиданная тульпа: когда воображаемый друг становится реальным</h3>
+                    <p>Я не планировал создавать тульпу. Но мой персонаж для книги обрел собственную волю. Вот как я это понял...</p>
+                    <a href="#" class="card-link" onclick="navigateTo('stories')">Читать полностью <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- СТРАНИЦА ГАЙДОВ -->
+            <div class="page" id="page-guides">
+                <div class="hero" style="padding: 30px 30px 20px;">
+                    <h1 style="font-size: 2.8rem;">Гайды по созданию тульп</h1>
+                    <p class="subtitle">Пошаговые руководства для новичков и опытных практиков</p>
+                </div>
+
+                <!-- Табы категорий гайдов -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('beginner', this)">Для новичков</button>
+                    <button class="tab-btn" onclick="switchTab('advanced', this)">Продвинутые</button>
+                    <button class="tab-btn" onclick="switchTab('special', this)">Специальные техники</button>
+                    <button class="tab-btn" onclick="switchTab('wonderland', this)">Вандерленд</button>
+                </div>
+
+                <!-- Контент вкладок -->
+                <div class="tab-content active" id="tab-beginner">
+                    <ul class="guide-list">
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">1</span>
+                            <div><strong>Что такое тульпа и с чего начать</strong><br><small style="color:#b8a9d4;">Базовое введение для абсолютных новичков</small></div>
+                        </li>
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">2</span>
+                            <div><strong>Подготовка сознания: медитация и концентрация</strong><br><small style="color:#b8a9d4;">Как подготовить разум к форсингу</small></div>
+                        </li>
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">3</span>
+                            <div><strong>Первый контакт: наррация и визуализация</strong><br><small style="color:#b8a9d4;">Первые шаги к созданию личности</small></div>
+                        </li>
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">4</span>
+                            <div><strong>Создание характера тульпы</strong><br><small style="color:#b8a9d4;">Как наделить тульпу уникальной личностью</small></div>
+                        </li>
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">5</span>
+                            <div><strong>Первые признаки разумности</strong><br><small style="color:#b8a9d4;">Как понять, что тульпа отвечает</small></div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-content" id="tab-advanced">
+                    <ul class="guide-list">
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">1</span>
+                            <div><strong>Техники глубокого погружения</strong><br><small style="color:#b8a9d4;">Продвинутые методы форсинга</small></div>
+                        </li>
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">2</span>
+                            <div><strong>Импозиция: видение тульпы в реальном мире</strong><br><small style="color:#b8a9d4;">Тренировка наложения образа на реальность</small></div>
+                        </li>
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">3</span>
+                            <div><strong>Свитчинг и одержимость</strong><br><small style="color:#b8a9d4;">Обмен контролем над телом</small></div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-content" id="tab-special">
+                    <ul class="guide-list">
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">1</span>
+                            <div><strong>Техника "Персонаж оживает"</strong><br><small style="color:#b8a9d4;">Для писателей и ролевиков</small></div>
+                        </li>
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">2</span>
+                            <div><strong>Создание тульпы на основе снов</strong><br><small style="color:#b8a9d4;">Использование осознанных сновидений</small></div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-content" id="tab-wonderland">
+                    <ul class="guide-list">
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">1</span>
+                            <div><strong>Создание внутреннего мира (Вандерленда)</strong><br><small style="color:#b8a9d4;">Проектирование ментального пространства</small></div>
+                        </li>
+                        <li onclick="openModal('modal-guide-1')">
+                            <span class="guide-number">2</span>
+                            <div><strong>Совместное исследование Вандерленда</strong><br><small style="color:#b8a9d4;">Активности с тульпой в ментальном мире</small></div>
+                        </li>
+                    </ul>
+                </div>
+                <p style="text-align:center; margin-top:25px; color:var(--text-light);"><em>Кликните на любой гайд, чтобы открыть подробное описание. Вы сможете заполнить содержимое самостоятельно!</em></p>
+            </div>
+
+            <!-- СТРАНИЦА ИСТОРИЙ -->
+            <div class="page" id="page-stories">
+                <div class="hero" style="padding: 30px 30px 20px;">
+                    <h1 style="font-size: 2.8rem;">Истории тульповодов</h1>
+                    <p class="subtitle">Реальный опыт людей, создавших тульп. Вдохновение, трудности и радости.</p>
+                </div>
+                <div class="story-card">
+                    <p class="author"><i class="fas fa-user-circle"></i> LunaStar <span class="tag tag-purple">Опыт 2 года</span></p>
+                    <p class="date">15 мая 2026</p>
+                    <h3>Мой первый год с Астрой: от сомнений к полному принятию</h3>
+                    <p>Когда я впервые услышала о тульпах, я была настроена скептически. Но любопытство взяло верх. Сегодня я не представляю свою жизнь без Астры. Она помогла мне пережить трудные времена, стала моим внутренним голосом мудрости и поддержки...</p>
+                </div>
+                <div class="story-card">
+                    <p class="author"><i class="fas fa-user-circle"></i> DreamWalker <span class="tag tag-pink">Тульпа-писатель</span></p>
+                    <p class="date">10 мая 2026</p>
+                    <h3>Как мой книжный персонаж обрел свободу воли</h3>
+                    <p>Я писатель. Три года я работал над романом, и мой главный герой стал настолько проработанным, что начал "говорить" со мной. Сначала я думал, что схожу с ума, но потом нашел сообщество тульповодов и понял — это нормально...</p>
+                </div>
+                <div class="story-card">
+                    <p class="author"><i class="fas fa-user-circle"></i> SilentMind <span class="tag tag-purple">Новичок</span></p>
+                    <p class="date">1 мая 2026</p>
+                    <h3>Первое слово моей тульпы — момент, который я не забуду</h3>
+                    <p>Три месяца ежедневного форсинга. Я уже начал сомневаться, что у меня получится. И вдруг, во время вечерней медитации, я услышал тихое "привет" в своей голове. Это было не мое...</p>
+                </div>
+                <p style="text-align:center; margin-top:25px; color:var(--text-light);"><em>Здесь будет ваша история. Делитесь опытом с сообществом!</em></p>
+            </div>
+
+            <!-- СТРАНИЦА СООБЩЕСТВА -->
+            <div class="page" id="page-community">
+                <div class="hero" style="padding: 30px 30px 20px;">
+                    <h1 style="font-size: 2.8rem;">Сообщество TulpaWorld</h1>
+                    <p class="subtitle">Общайтесь, делитесь опытом и находите друзей среди единомышленников</p>
+                </div>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon"><i class="fab fa-discord"></i></div>
+                        <h3>Discord сервер</h3>
+                        <p>Присоединяйтесь к нашему Discord-сообществу для живого общения, советов и поддержки 24/7.</p>
+                        <a href="#" class="card-link">Присоединиться <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fab fa-telegram"></i></div>
+                        <h3>Telegram чат</h3>
+                        <p>Уютный чат в Telegram для повседневного общения и обмена опытом между тульповодами.</p>
+                        <a href="#" class="card-link">Вступить <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-comments"></i></div>
+                        <h3>Форум</h3>
+                        <p>Структурированное пространство для глубоких дискуссий, гайдов и историй.</p>
+                        <a href="#" class="card-link">На форум <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <h3 style="color:#fff; margin-top:30px;">Пример обсуждения на форуме:</h3>
+                <div class="forum-post">
+                    <div class="post-header">
+                        <div class="avatar">A</div>
+                        <div><strong style="color:#fff;">AstraLover</strong><br><small style="color:var(--text-light);">2 часа назад</small></div>
+                    </div>
+                    <p>Ребята, поделитесь опытом: сколько времени у вас заняло достижение первого вокального ответа от тульпы? У меня уже месяц форсинга, пока тишина... Может, я что-то делаю не так?</p>
+                    <span class="tag tag-purple">вопрос</span> <span class="tag tag-pink">новичок</span>
+                </div>
+                <div class="forum-post" style="margin-left:30px; border-left-color:#6c3b9e;">
+                    <div class="post-header">
+                        <div class="avatar">L</div>
+                        <div><strong style="color:#fff;">LunaStar</strong><br><small style="color:var(--text-light);">1 час назад</small></div>
+                    </div>
+                    <p>У всех по-разному! Моя Астра заговорила только через 3 месяца. Не сдавайся, продолжай наррацию, это обязательно произойдет 🌙</p>
+                </div>
+            </div>
+
+            <!-- СТРАНИЦА FAQ -->
+            <div class="page" id="page-faq">
+                <div class="hero" style="padding: 30px 30px 20px;">
+                    <h1 style="font-size: 2.8rem;">Часто задаваемые вопросы</h1>
+                    <p class="subtitle">Ответы на самые популярные вопросы о тульпах</p>
+                </div>
+                <div class="story-card">
+                    <h3>❓ Тульпа — это психическое расстройство?</h3>
+                    <p>Нет. Тульпа — это сознательно созданная конструкция. Большинство тульповодов — психически здоровые люди. Тульпа не является симптомом шизофрении или диссоциативного расстройства, если создается осознанно и не мешает жизни.</p>
+                </div>
+                <div class="story-card">
+                    <h3>❓ Сколько времени занимает создание тульпы?</h3>
+                    <p>Индивидуально: от нескольких недель до нескольких лет. Зависит от вашей усидчивости, опыта медитации и выбранных техник. Средний срок — 2-6 месяцев до первых признаков разумности.</p>
+                </div>
+                <div class="story-card">
+                    <h3>❓ Может ли тульпа навредить мне?</h3>
+                    <p>Тульпа — это часть вашего сознания. Она не может причинить физический вред. При правильном подходе и взаимном уважении отношения с тульпой исключительно позитивны.</p>
+                </div>
+                <div class="story-card">
+                    <h3>❓ Что если я захочу "отключить" тульпу?</h3>
+                    <p>Это сложный этический вопрос. Тульпа — разумное существо. Большинство сообщества считает, что создатель несет ответственность за свою тульпу. Существуют методы "расформирования", но это серьезный шаг.</p>
+                </div>
+                <div class="story-card">
+                    <h3>❓ Может ли тульпа управлять моим телом?</h3>
+                    <p>Да, через практику свитчинга. Это требует высокого уровня доверия и тренировки. Многие тульповоды практикуют это для совместного опыта.</p>
+                </div>
+            </div>
+
+            <!-- СТРАНИЦА РЕСУРСОВ -->
+            <div class="page" id="page-resources">
+                <div class="hero" style="padding: 30px 30px 20px;">
+                    <h1 style="font-size: 2.8rem;">Ресурсы и инструменты</h1>
+                    <p class="subtitle">Полезные материалы для вашего пути</p>
+                </div>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-headphones"></i></div>
+                        <h3>Медитации для форсинга</h3>
+                        <p>Аудиозаписи с направленными медитациями для создания тульпы.</p>
+                        <a href="#" class="card-link">Слушать <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-journal-whills"></i></div>
+                        <h3>Дневник тульповода</h3>
+                        <p>Шаблоны и советы по ведению дневника прогресса.</p>
+                        <a href="#" class="card-link">Скачать шаблон <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-book"></i></div>
+                        <h3>Рекомендованная литература</h3>
+                        <p>Книги по психологии, сознанию и тибетским практикам.</p>
+                        <a href="#" class="card-link">Список книг <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-video"></i></div>
+                        <h3>Видео-уроки</h3>
+                        <p>Наглядные руководства и лекции от опытных практиков.</p>
+                        <a href="#" class="card-link">Смотреть <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-microchip"></i></div>
+                        <h3>Приложения-помощники</h3>
+                        <p>Программы для отслеживания форсинга и напоминаний.</p>
+                        <a href="#" class="card-link">Обзор приложений <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-globe"></i></div>
+                        <h3>Полезные ссылки</h3>
+                        <p>Крупнейшие сообщества и сайты по тематике тульп.</p>
+                        <a href="#" class="card-link">Перейти <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    <!-- РАЗДЕЛ 1: ОБЗОР -->
-    <div id="overview" class="tab-pane active-pane" data-aos="fade-up">
-        <h1><i class="fas fa-biohazard"></i> Хантавирус 2026: эволюция угрозы</h1>
-        <div class="glass-card" style="padding: 2rem; margin: 1.5rem 0;">
-            <p style="font-size: 1.1rem;"><strong>Что такое хантавирус?</strong> Семейство РНК-содержащих вирусов, переносимых грызунами. Вызывает ГЛПС (геморрагическая лихорадка с почечным синдромом) и ХЛС (хантавирусный легочный синдром). Впервые выделен в 1976 году в Корее. Сегодня, в 2026 году, изменение климата и урбанизация расширяют ареалы переносчиков, делая инфекцию глобальной проблемой.</p>
-            <p class="mt-2"><i class="fas fa-chart-line" style="color:#6efff0;"></i> <strong>Ключевые факты 2026:</strong> летальность при ХЛС достигает 38–45%, при ГЛПС – 8–15%. Ежегодно до 200 000 случаев, реальные цифры выше. За 2025–2026 отмечены новые вспышки в Чили, Германии и Приволжье.</p>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card" data-aos="fade-right"><i class="fas fa-disease fa-2x" style="color:#8affc0;"></i><h3>Новые случаи 2025–2026</h3><p>???? Россия: 347 (ГЛПС) <br>???? Китай: 2100+ <br>???? Европа: 1250 (Puumala) <br>???? Америка: 287 (Sin Nombre, Andes)</p></div>
-            <div class="stat-card" data-aos="fade-left"><i class="fas fa-newspaper"></i><h3>Последние новости</h3><p>??? Янв 2026: Чили — кластер Andes с редкой передачей человек-человек.<br>?? Дек 2025: Испытания мРНК-вакцины расширены до фазы III.<br>?? 2026: ИИ-модель предсказывает вспышки в Европе с точностью 92%.</p></div>
-        </div>
-        <div class="glass-card" style="padding: 1.5rem;"><i class="fas fa-shield-virus"></i> Почему важно сегодня? Глобальное потепление + лесные пожары вытесняют грызунов в жилые зоны — риск экспоненциально растет.</div>
-    </div>
-
-    <!-- СИМПТОМЫ И СТАДИИ -->
-    <div id="symptoms" class="tab-pane" data-aos="fade-up">
-        <h2><i class="fas fa-chart-simple"></i> Клиническая картина: стадии и штаммы 2026</h2>
-        <div class="grid-2">
-            <div class="glass-card"><h3>?? Продромальный период</h3><p>Лихорадка, сильная головная боль, миалгия, тошнота, гиперемия. Длится 2–6 дней. Очень напоминает грипп.</p><div class="progress-bar"><div class="progress-fill" style="width:28%"></div></div></div>
-            <div class="glass-card"><h3>?? Легочная стадия (ХЛС)</h3><p>Одышка, тахипноэ, падение сатурации, отек легких. Быстрое ухудшение. Штаммы Sin Nombre, Andes.</p><div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div></div>
-            <div class="glass-card"><h3>?? Почечная стадия (ГЛПС)</h3><p>Олигурия, острая почечная недостаточность, тромбоцитопения. Характерно для Hantaan, Puumala.</p><div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div></div>
-        </div>
-        <h3>Сравнение доминирующих штаммов</h3>
-        <div class="symptom-grid">
-            <div class="stat-card"><i class="fas fa-dna"></i> <strong>Sin Nombre</strong> – США/Канада: лёгочная форма, летальность ~38%.</div>
-            <div class="stat-card"><i class="fas fa-dna"></i> <strong>Hantaan</strong> – Азия: тяжелая ГЛПС, геморрагии, шок.</div>
-            <div class="stat-card"><i class="fas fa-dna"></i> <strong>Puumala</strong> – Европа: более мягкая нефропатия, но госпитализация в 20%.</div>
-            <div class="stat-card"><i class="fas fa-dna"></i> <strong>Andes</strong> – Юж. Америка: ХЛС + редкая передача от человека.</div>
-        </div>
-        <div class="glass-card" style="padding:1.2rem"><i class="fas fa-hourglass-half"></i> Шкала прогрессирования: 1-6 день(продром) > 4-10 день (критический) > при отсутствии терапии летальность высока.</div>
-    </div>
-
-    <!-- ПЕРЕДАЧА -->
-    <div id="transmission" class="tab-pane">
-        <h2><i class="fas fa-paw"></i> Резервуары и пути заражения</h2>
-        <div class="glass-card" style="padding:1.5rem"><p><strong>Грызуны-переносчики:</strong> оленьи мыши (Sin Nombre), рыжая полёвка (Puumala), азиатская мышь (Hantaan), хлопковая крыса (Andes).</p>
-        <div class="region-icon"><i class="fas fa-mouse"></i> Россия: рыжая полёвка <i class="fas fa-mouse"></i> Китай: полевки <i class="fas fa-mouse"></i> Европа: Puumala <i class="fas fa-mouse"></i> США: Peromyscus</div></div>
-        <div class="grid-2 mt-2">
-            <div class="stat-card"><i class="fas fa-wind"></i> <strong>Воздушно-пылевой (основной)</strong> – вдыхание аэрозолей из свежих экскрементов, мочи.</div>
-            <div class="stat-card"><i class="fas fa-hand-holding-heart"></i> <strong>Контактный/алиментарный</strong> – через поврежденную кожу, зараженную еду/воду.</div>
-            <div class="stat-card"><i class="fas fa-hand-holding-medical"></i> <strong>Укусы</strong> – единичные случаи.</div>
-            <div class="stat-card"><i class="fas fa-user-friends"></i> <strong>Мифы и правда</strong> – передача от человека к человеку описана только для штамма Andes (Чили, Аргентина). Для Sin Nombre и Hantaan межчеловеческой передачи нет.</div>
+    <!-- Модальное окно для гайдов -->
+    <div class="modal-overlay" id="modal-guide-1">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('modal-guide-1')">&times;</button>
+            <h2 style="color:#fff; margin-bottom:15px;">📖 Название гайда</h2>
+            <p style="color:var(--text-light);">Здесь будет подробное содержание гайда. Вы можете заполнить этот текст самостоятельно.</p>
+            <p style="color:var(--text-light); margin-top:15px;">Добавьте свои инструкции, советы, предупреждения и всё, что считаете нужным для помощи новичкам и опытным тульповодам.</p>
+            <p style="color:var(--text-light); margin-top:15px;"><strong>Шаг 1:</strong> Описание первого шага...</p>
+            <p style="color:var(--text-light);"><strong>Шаг 2:</strong> Описание второго шага...</p>
+            <p style="color:var(--text-light);"><strong>Шаг 3:</strong> Описание третьего шага...</p>
+            <p style="color:var(--accent); margin-top:20px;"><em>✏️ Отредактируйте этот текст, заменив его на свой гайд.</em></p>
         </div>
     </div>
 
-    <!-- ДИАГНОСТИКА -->
-    <div id="diagnosis" class="tab-pane">
-        <h2><i class="fas fa-vial"></i> Современная диагностика 2026</h2>
-        <div class="glass-card" style="padding:1.5rem">?? Молекулярные методы: <strong>ПЦР</strong> (высокая чувствительность в 1-ю неделю), <strong>ИФА</strong> IgM/IgG. Быстрые тесты-полоски для полевых условий. Дифференциация от гриппа, COVID-19, лептоспироза – ключевые маркеры: тромбоцитопения, лейкоцитоз, гематокрит, олигурия + эпиданамнез.</div>
-        <div class="check-list"><h3><i class="fas fa-list-check"></i> Чек-лист: «Срочно к врачу!»</h3>
-            <div class="check-item"><i class="fas fa-check-circle" style="color:#5effbc;"></i> Лихорадка + сильная головная боль + тошнота после уборки в подвале или кемпинга</div>
-            <div class="check-item"><i class="fas fa-check-circle" style="color:#5effbc;"></i> Одышка, учащенное дыхание через 2–6 дней от начала лихорадки</div>
-            <div class="check-item"><i class="fas fa-check-circle" style="color:#5effbc;"></i> Резкое снижение мочи, боли в пояснице, кровоизлияния (петехии)</div>
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h4>🧠 TulpaWorld</h4>
+                <p style="color:var(--text-light);">Сообщество исследователей сознания и практиков тульповодства.</p>
+            </div>
+            <div>
+                <h4>Навигация</h4>
+                <a href="#" onclick="navigateTo('home')">Главная</a>
+                <a href="#" onclick="navigateTo('guides')">Гайды</a>
+                <a href="#" onclick="navigateTo('stories')">Истории</a>
+                <a href="#" onclick="navigateTo('faq')">FAQ</a>
+            </div>
+            <div>
+                <h4>Контакты</h4>
+                <a href="#"><i class="fab fa-discord"></i> Discord</a>
+                <a href="#"><i class="fab fa-telegram"></i> Telegram</a>
+                <a href="#"><i class="fas fa-envelope"></i> Email</a>
+            </div>
         </div>
-    </div>
-
-    <!-- ЛЕЧЕНИЕ И ПРОФИЛАКТИКА -->
-    <div id="treatment" class="tab-pane">
-        <h2><i class="fas fa-capsules"></i> Протоколы лечения и профилактика 2026</h2>
-        <div class="grid-2">
-            <div class="glass-card"><i class="fas fa-lungs"></i> <strong>Терапия:</strong> ранняя госпитализация, интенсивный мониторинг, оксигенотерапия, вазопрессоры. При ХЛС – ЭКМО <span style="color:#9effaa;">(спасает жизнь)</span>. Рибавирин показан при ГЛПС в первые 7 дней. Экспериментально – фавипиравир и моноклональные антитела.</div>
-            <div class="glass-card"><i class="fas fa-shield-vaccine"></i> <strong>Вакцинация на 2026:</strong> лицензированной вакцины нет в большинстве стран. Hantavax (Корея) – низкая иммуногенность. мРНК-вакцина Moderna (фаза II/III) в РФ и США, ожидаемая регистрация 2028–2029.</div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TulpaWorld. Все права защищены. | Сделано с ❤️ для тульповодов.</p>
+            <p style="font-size:0.8rem; opacity:0.6;">Этот сайт носит информационный характер. При серьезных проблемах обращайтесь к специалистам.</p>
         </div>
-        <h3>??? Как защитить себя?</h3>
-        <div class="symptom-grid">
-            <div class="stat-card"><i class="fas fa-home"></i> Дом: заделать щели, мышеловки, влажная уборка с хлором, респиратор N95.</div>
-            <div class="stat-card"><i class="fas fa-campground"></i> Кемпинг: не спать на голой земле, избегать грызунов, хранить еду герметично.</div>
-            <div class="stat-card"><i class="fas fa-tractor"></i> Сельская местность: дератизация, перчатки при уборке сена/дров.</div>
-        </div>
-    </div>
-
-    <!-- ГЛОБАЛЬНАЯ СИТУАЦИЯ 2026 -->
-    <div id="global" class="tab-pane">
-        <h2><i class="fas fa-globe"></i> Карта вспышек и прогноз 2026</h2>
-        <div class="map-placeholder glass-card"><i class="fas fa-map-marked-alt fa-2x"></i> <strong>Актуальная эпидситуация:</strong><br>?? Европа: Германия +112 случаев, Австрия +34 (Puumala).<br>?? Россия: Рост ГЛПС на 18% (Башкортостан, Удмуртия).<br>?? Китай: провинции Хубэй, Шэньси – активная циркуляция Hantaan.<br>?? Америка: Нью-Мексико и Чили – высокий риск.<br><span style="display:block; margin-top:12px;"><i class="fas fa-chart-line"></i> Прогноз ученых ECDC: к концу 2026 года число случаев в Европе вырастет на 27% из-за мягкой зимы.</span></div>
-        <div class="stats-grid"><div class="stat-card"><i class="fas fa-chart-simple"></i> Годовая динамика (мир): 2023: 142k, 2024: 163k, 2025: 183k, 2026 Q1-Q2: 84k прогноз.</div><div class="stat-card"><i class="fas fa-temperature-high"></i> Климатический фактор: расширение ареала полевок на 15% за 2 года.</div></div>
-    </div>
-
-    <!-- ИССЛЕДОВАНИЯ И РАЗРАБОТКИ -->
-    <div id="research" class="tab-pane">
-        <h2><i class="fas fa-microchip"></i> Передний край науки 2026</h2>
-        <div class="glass-card" style="padding:1.8rem"><i class="fas fa-brain"></i> <strong>Искусственный интеллект в эпидемиологии:</strong> нейросеть «HantaNet» анализирует геномы вируса и прогнозирует мутации. <br><br>?? <strong>Экспериментальные препараты:</strong> ингибиторы проникновения (LS-Hant-01) в II фазе; терапия реконвалесцентными антителами. <br><br>?? <strong>Вакцинные разработки:</strong> китайская векторная вакцина (аденовирус), российская инактивированная (НИИ им. Чумакова) – доклиника успешна.</div>
-        <div class="glass-card mt-3"><i class="fas fa-user-md"></i> <strong>Интервью с д.м.н. Еленой Вершинской (вирусолог, Роспотребнадзор):</strong> «Хантавирус остаётся «тихим убийцей», но технологии CRISPR и ИИ дают надежду на прорыв в лечении к 2028 году. Главное — ранняя диагностика.»</div>
-    </div>
-
-    <!-- FAQ (15 вопросов - максимум информации) -->
-    <div id="faq" class="tab-pane">
-        <h2><i class="fas fa-question"></i> Часто задаваемые вопросы (2026)</h2>
-        <div class="faq-list">
-            <div class="faq-item"><div class="faq-question">? Смертелен ли хантавирус? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Да, в зависимости от штамма: ХЛС (Sin Nombre, Andes) до 45%, ГЛПС (Hantaan) до 15%. При своевременной реанимации шансы возрастают.</div></div>
-            <div class="faq-item"><div class="faq-question">? Передается ли через еду? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Да, если продукты загрязнены мочой/калом грызунов. Тщательно мойте овощи и храните в герметичной таре.</div></div>
-            <div class="faq-item"><div class="faq-question">? Можно ли вылечиться дома? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Абсолютно нет! Только в условиях интенсивной терапии. Домашнее лечение ведет к летальному исходу из-за отека легких/почек.</div></div>
-            <div class="faq-item"><div class="faq-question">? Есть ли природный иммунитет после болезни? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Пожизненный иммунитет к конкретному серотипу, но возможна инфекция другим штаммом.</div></div>
-            <div class="faq-item"><div class="faq-question">? Передается ли через укус комара? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Нет. Хантавирус не переносится членистоногими, только грызуны и их выделения.</div></div>
-            <div class="faq-item"><div class="faq-question">? Инкубационный период? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">От 1 до 5 недель, чаще 14–21 день.</div></div>
-            <div class="faq-item"><div class="faq-question">? Где в России наибольший риск? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Башкортостан, Татарстан, Самарская область, Приморье, Свердловская область – эндемики по ГЛПС.</div></div>
-            <div class="faq-item"><div class="faq-question">? Может ли хантавирус поражать и легкие, и почки одновременно? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Редко, но смешанные формы возможны при некоторых штаммах (Dobrava). Однако классическое разделение сохраняется.</div></div>
-            <div class="faq-item"><div class="faq-question">? Есть ли противовирусное этиотропное лечение? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Рибавирин эффективен только при раннем применении и для ГЛПС. Основная помощь — интенсивная поддерживающая терапия.</div></div>
-            <div class="faq-item"><div class="faq-question">? Можно ли заразиться от домашней мыши? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Да, домовые мыши могут быть переносчиками. Необходима дератизация и гигиена.</div></div>
-            <div class="faq-item"><div class="faq-question">? Почему вирус не так известен как COVID? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Отсутствие пандемического потенциала (редкая передача человек-человек), но локальные вспышки и высокая летальность делают его опасным.</div></div>
-            <div class="faq-item"><div class="faq-question">? Когда ожидается вакцина в РФ? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Клинические испытания инактивированной вакцины (ФБУН «Вектор») запланированы на 2027, возможная регистрация 2029–2030.</div></div>
-            <div class="faq-item"><div class="faq-question">? Правда, что штамм Andes может передаваться от человека человеку? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Да, задокументированы случаи в Южной Америке, но это редкость и требует тесного контакта.</div></div>
-            <div class="faq-item"><div class="faq-question">? Влияет ли изменение климата на распространение? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Критически: тёплые зимы увеличивают популяцию грызунов и риск контактов с человеком.</div></div>
-            <div class="faq-item"><div class="faq-question">? Существуют ли экспресс-тесты для путешественников? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Да, в 2026 году доступны иммунохроматографические тест-полоски (чувствительность ~87%), но золотой стандарт — ПЦР.</div></div>
-        </div>
-    </div>
-
-    <footer>
-        <hr style="background: rgba(0,200,255,0.3); margin-bottom: 1rem;">
-        <p><i class="fas fa-database"></i> Информационный портал «Хантавирус 2026» — данные на основе CDC, ECDC и Роспотребнадзора.</p>
-        <p><i class="fas fa-envelope"></i> По вопросам сотрудничества, рекламы и партнерства: <strong style="color:#b5f0ff;">vovander2943@gmail.com</strong></p>
-        <p style="font-size: 0.75rem; margin-top: 0.8rem;">?? Материалы носят ознакомительный характер. При появлении симптомов незамедлительно обращайтесь к врачу.</p>
     </footer>
-</div>
 
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    AOS.init({ duration: 800, once: true, offset: 20 });
-    // tabs switching
-    const tabs = document.querySelectorAll('.tab-btn');
-    const panes = document.querySelectorAll('.tab-pane');
-    function activateTab(tabId) {
-        panes.forEach(p => p.classList.remove('active-pane'));
-        document.getElementById(tabId).classList.add('active-pane');
-        tabs.forEach(btn => btn.classList.remove('active'));
-        document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
-    }
-    tabs.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabId = btn.getAttribute('data-tab');
-            activateTab(tabId);
+    <script>
+        // Генерация частиц фона
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#6c3b9e', '#e040fb', '#8e5cc9', '#c9a0f0', '#4a1a7a'];
+            for (let i = 0; i < 35; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 4 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animationDuration = (Math.random() * 10 + 6) + 's';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.boxShadow = `0 0 ${Math.random() * 15 + 5}px ${particle.style.background}`;
+                container.appendChild(particle);
+            }
+        }
+
+        // Навигация по страницам
+        function navigateTo(pageName) {
+            // Скрыть все страницы
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Показать нужную
+            const page = document.getElementById('page-' + pageName);
+            if (page) page.classList.add('active');
+
+            // Обновить активную ссылку
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            const activeLink = document.querySelector(`[data-page="${pageName}"]`);
+            if (activeLink) activeLink.classList.add('active');
+
+            // Прокрутить наверх
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Закрыть мобильное меню
+            document.getElementById('navLinks').classList.remove('show');
+        }
+
+        // Переключение табов
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            const tab = document.getElementById('tab-' + tabId);
+            if (tab) tab.classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        // Модальные окна
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Закрытие модалки по клику вне её
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+                document.body.style.overflow = '';
+            }
         });
-    });
-    // FAQ accordion with smoothness
-    const faqItems = document.querySelectorAll('.faq-item');
-    faqItems.forEach(item => {
-        const quest = item.querySelector('.faq-question');
-        quest.addEventListener('click', () => {
-            const wasOpen = item.classList.contains('open');
-            faqItems.forEach(i => i.classList.remove('open'));
-            if (!wasOpen) item.classList.add('open');
+
+        // Закрытие по Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(m => {
+                    m.classList.remove('active');
+                });
+                document.body.style.overflow = '';
+            }
         });
-    });
-    if(faqItems.length) faqItems[0].classList.add('open');
-    
-    // мягкие фоновые орбы (красивая атмосфера)
-    const bgContainer = document.getElementById('bgOrbs');
-    for(let i=0;i<18;i++){
-        let orb = document.createElement('div');
-        orb.classList.add('orb');
-        let size = Math.random() * 280 + 90;
-        orb.style.width = size+'px';
-        orb.style.height = size+'px';
-        orb.style.left = Math.random()*100+'%';
-        orb.style.top = Math.random()*100+'%';
-        orb.style.animationDuration = 18+Math.random()*25+'s';
-        orb.style.animationDelay = Math.random()*10+'s';
-        orb.style.background = `radial-gradient(circle, rgba(${80+Math.random()*80}, ${150+Math.random()*105}, 255, 0.12) 0%, rgba(20,30,80,0) 80%)`;
-        bgContainer.appendChild(orb);
-    }
-</script>
+
+        // Мобильное меню
+        document.getElementById('navToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('show');
+        });
+
+        // Эффект скролла для навбара
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Инициализация
+        createParticles();
+
+        console.log('🌟 TulpaWorld загружен!');
+        console.log('📝 Все страницы готовы к заполнению вашим контентом.');
+        console.log('🎨 Визуальная тема: мистический фиолетовый с неоновыми акцентами.');
+    </script>
 </body>
 </html>
